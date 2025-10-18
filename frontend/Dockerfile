@@ -20,7 +20,7 @@ RUN --mount=type=cache,target=/root/.npm npm ci
 COPY . .
 
 # Build the Vue.js application
-RUN npm run dev
+RUN npm run build
 
 # =========================================
 # Stage 2: Prepare Nginx to Serve Static Files

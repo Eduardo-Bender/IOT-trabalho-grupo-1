@@ -21,8 +21,8 @@ export default {
         required: true
       },
     chartOptions: {
-      type: Object,
-      default: () => {}
+        type: Object,
+        default: () => ({})
     }
   }
 }
