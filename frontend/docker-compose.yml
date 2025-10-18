@@ -1,0 +1,11 @@
+services:
+  vue-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080" # Map host port 8080 to container port 8080
+    volumes:
+      - .:/app # Mount the current directory into the container for development (optional)
+    # If you are using `npm run serve` for development, you might need a different command:
+    # command: npm run serve
