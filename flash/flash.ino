@@ -1,10 +1,24 @@
 #include <stdio.h>
 #include <Ultrasonic.h>
+#include <Keypad.h>
 
 #define analogTempPin A0
 #define somTriggerPin 21
 #define somEchoPin 22
 
+const byte rows = 4;
+const byte cols = 4;
+
+char keys[rows][cols] = {
+  {'1','2','3', 'a'},
+  {'4','5','6', 'b'},
+  {'7','8','9', 'c'},
+  {'#','0','*', 'd'}
+};
+
+byte rowPins[rows] = {13, 12, 11, 10};
+byte colPins[cols] = {9, 8, 7, 6};
+Keypad keypad = Keypad( makeKeymap(keys), rowPins, colPins, rows, cols );
 
 //////////////////////////////////////////////////////////////////////////////
 ///////////////////////// Shameless global variables /////////////////////////
@@ -28,6 +42,15 @@ void loop() {
   // numpadLoop();
 
   delay(300);
+}
+
+void numpadLoop()
+{
+  char key = keypad.getKey();
+
+  if (key != NO_KEY){
+    //Serial.println(key);
+  }
 }
 
 void somLoop(){
