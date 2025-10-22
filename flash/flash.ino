@@ -2,6 +2,15 @@
 #include <Ultrasonic.h>
 #include <Keypad.h>
 
+//----------------------------------------------------------
+
+#include <IRremote.h>                       // Biblioteca IRemote
+int RECV_PIN = 22;                          // Arduino pino D11 conectado no Receptor IR
+IRrecv irrecv(RECV_PIN);                    // criando a instância
+decode_results results;                     // declarando os resultados
+
+//----------------------------------------------------------
+
 #define analogTempPin A0
 #define somTriggerPin 21
 #define somEchoPin 22
@@ -32,14 +41,27 @@ Ultrasonic ultrasonic(somTriggerPin, somEchoPin, 40000UL);
 
 void setup() {
   Serial.begin(9600);
+  irrecv.enableIRIn();
+}
+
+void loop_ir()
+{
+  if (irrecv.decode(&results))              // se algum código for recebido
+  {
+    Serial.println(results.value, HEX);     // imprime o HEX Code
+    irrecv.resume();                        // reinicializa o receptor
+    delay(10);                              // atraso de 10 ms
+  }
 }
 
 void loop() {
   //temperaturaLoop();
-  somLoop();
+  // somLoop();
   // displayLoop();
   // botaoLoop();
   // numpadLoop();
+
+  loop_ir();
 
   delay(300);
 }
