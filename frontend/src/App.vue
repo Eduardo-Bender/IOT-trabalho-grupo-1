@@ -1,23 +1,29 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+import HomeView from './views/HomeView.vue';
+import { ref, onMounted } from 'vue'
+import * as chartConfig from './chartConfig.js'
+import ChartData from 'chart.js/auto'
+import BarChartView from './views/BarChartView.vue';
+
+interface Dados {
+  data: string;
+  hora: string;
+  temperatura: number;
+}
+
+const jsonString = '{"data":[{"date":"2015/7/21", "time":"12:20:59", "temperature":"79.11"},{"date":"2015/7/21", "time":"12:20:59", "temperature":"78.23"},{"date":"2015/7/21", "time":"12:21:0", "temperature":"78.23"},{"date":"2015/7/21", "time":"12:21:1", "temperature":"79.11"},{"date":"2015/7/21", "time":"12:21:2", "temperature":"78.23"},{"date":"2015/7/21", "time":"12:21:3", "temperature":"78.23"},{"date":"2015/7/21", "time":"12:21:4", "temperature":"79.11"}]}'
+
+
+const data:Dados = JSON.parse(jsonString).data;
+
+const options = chartConfig.options
+
+
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header>
-
-  <RouterView />
+  <BarChartView :chart-data="data" :chart-options="options" />
 </template>
 
 <style scoped>

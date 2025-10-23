@@ -1,9 +1,13 @@
 <script setup lang="ts">
-import TheWelcome from '../components/TheWelcome.vue'
+import BarChartView from './BarChartView.vue';
+import BubbleChartView from './BubbleChartView.vue';
+import DoughnutChartView from './DoughnutChartView.vue';
+
+
 </script>
 
 <template>
   <main>
-    <TheWelcome />
+    <BarChartView/>
   </main>
 </template>

@@ -16,7 +16,10 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@tailwindcss/vite": "^4.1.14",
+    "cally": "^0.8.0",
     "chart.js": "^4.5.1",
+    "tailwindcss": "^4.1.14",
     "vue": "^3.5.22",
     "vue-chartjs": "^5.3.2",
     "vue-router": "^4.5.1"
@@ -28,6 +31,7 @@
     "@vue/eslint-config-prettier": "^10.2.0",
     "@vue/eslint-config-typescript": "^14.6.0",
     "@vue/tsconfig": "^0.8.1",
+    "daisyui": "^5.3.7",
     "eslint": "^9.33.0",
     "eslint-plugin-vue": "~10.4.0",
     "jiti": "^2.5.1",
