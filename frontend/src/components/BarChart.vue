@@ -9,7 +9,7 @@
 <script setup>
 import { Bar } from 'vue-chartjs'
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale} from 'chart.js/auto'
-
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 const props = defineProps({
   chartData: {
         type: Object,
@@ -21,7 +21,7 @@ const props = defineProps({
     }
 })
 
-ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ChartDataLabels)
 // export default {
 //   name: 'BarChart',
 //   components: { Bar },

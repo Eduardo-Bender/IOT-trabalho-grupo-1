@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import BarChartView from './BarChartView.vue';
+import BarChartView from './TemperatureLineView.vue';
 import BubbleChartView from './BubbleChartView.vue';
 import DoughnutChartView from './DoughnutChartView.vue';
 
