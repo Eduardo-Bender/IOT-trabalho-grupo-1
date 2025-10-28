@@ -1,11 +1,8 @@
 <template>
   <Calendar :day="day"></Calendar>
-  <div class="h-full">
-    <div class="h-full ">
-      <LineChart :chart-data="chartData" :chart-options="chartOptions"/>
-    </div>
+  <div>
+    <LineChart :chart-data="chartData" :chart-options="chartOptions"/>
   </div>
-
 
 </template>
 
@@ -44,7 +41,7 @@ function setDatasets(){
     ret.push(
       {
         label: a[0].id,
-        backgroundColor: '#f87979',
+        backgroundColor: '#ffffff',
         data: a.map(obj => obj.temperature)
       }
     )
