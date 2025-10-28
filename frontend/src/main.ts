@@ -2,10 +2,18 @@ import './assets/main.css'
 
 import { createApp } from 'vue'
 import App from './App.vue'
-// import router from './router'
 import "cally"
+import { provide } from 'vue'
+import Dashboard from './views/Dashboard.vue'
+import TemperatureLineView from './views/TemperatureLineView.vue'
+import Grafico from './views/Grafico.vue'
+
 const app = createApp(App)
 
-// app.use(router)
+const routes = {
+  '/': Dashboard,
+  '/temperatura': Grafico
+}
+app.provide('routes', routes)
 
 app.mount('#app')

@@ -1,5 +1,11 @@
 <template>
-  <Calendar :day="day"></Calendar>
+  <div class="flex gap-4">
+    <p class="text-2xl text-black">Sensor de Temperatura</p>
+    <Calendar :day="day"></Calendar>
+    <select class="select w-min">
+      <option>Placa</option>
+    </select>
+  </div>
   <div class="h-full">
     <div class="h-full ">
       <LineChart :chart-data="chartData" :chart-options="chartOptions"/>
