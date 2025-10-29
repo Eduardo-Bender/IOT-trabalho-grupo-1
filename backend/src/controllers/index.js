@@ -24,3 +24,28 @@ exports.removerLeitura = async (req, res) => {
   await service.removerLeitura(req.params.id);
   res.status(204).send();
 };
+
+exports.buscarPlaca = async (req, res) => {
+  const placa = await service.buscarPlaca(req.params.id);
+  if (!placa) return res.status(404).json({ error: 'Placa não encontrada' });
+  res.json(placa);
+};
+
+exports.criarPlaca = async (req, res) => {
+  const { nome, descricao } = req.body;
+  if (!nome || !descricao) {
+    return res.status(400).json({ error: 'Dados inválidos' });
+  }
+  const placa = await service.criarPlaca(nome, descricao);
+  res.status(201).json(placa);
+};
+
+exports.listarPlacas = async (req, res) => {
+  const placas = await service.listarPlacas();
+  res.json(placas);
+};
+
+exports.removerPlaca = async (req, res) => {
+  await service.removerPlaca(req.params.id);
+  res.status(204).send();
+};  

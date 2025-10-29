@@ -8,6 +8,11 @@ const sequelize = new Sequelize({
 
 // Define o modelo Placa
 const Placa = sequelize.define('Placa', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
   nome: {
     type: DataTypes.STRING,
     allowNull: false,
