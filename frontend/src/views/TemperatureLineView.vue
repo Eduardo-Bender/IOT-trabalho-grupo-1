@@ -2,8 +2,8 @@
   <div class="flex gap-4">
     <p class="text-2xl text-black">Sensor de Temperatura</p>
     <Calendar :day="day" @input="changeDay" :uniqueId="uniqueID" :popover="uniqueID + 'popover'"></Calendar>
-    <select class="select w-min">
-      <option>Placa</option>
+    <select class="select w-min" v-model="selectedPlaca" @change="reload()">
+      <option v-for="p in placas" :id="p">{{ p }}</option>
     </select>
   </div>
   <div class="h-full">
@@ -20,7 +20,9 @@ import { ref, inject} from "vue";
 import LineChart from "@/components/LineChart.vue";
 import Calendar from "@/components/Calendar.vue";
 
+const placas = ['placa1', 'placa2']
 const colors = inject('colors')
+const selectedPlaca = ref(placas[0]);
 
 interface Dados {
   id: number,
@@ -28,20 +30,20 @@ interface Dados {
   hora: string;
   temperatura: number;
 }
-const jsonString = '{"data":[{"id":1,"date":"2025-11-09", "time":"12:20:59", "temperature":"79.11"},{"id":1,"date":"2025-11-09", "time":"12:20:60", "temperature":"78.23"},{"id":1,"date":"2025-11-09", "time":"12:21:0", "temperature":"78.23"},{"id":1,"date":"2025-11-09", "time":"12:21:1", "temperature":"79.11"},{"id":1,"date":"2025-11-09", "time":"12:21:2", "temperature":"78.23"},{"id":1,"date":"2025-11-09", "time":"12:21:3", "temperature":"78.23"},{"id":1,"date":"2025-11-09", "time":"12:21:4", "temperature":"79.11"},{"id":2,"date":"2025-11-09", "time":"12:20:59", "temperature":"79.11"},{"id":2,"date":"2025-11-09", "time":"12:20:60", "temperature":"78.23"},{"id":2,"date":"2025-11-09", "time":"12:21:0", "temperature":"78.23"},{"id":2,"date":"2025-11-09", "time":"12:21:1", "temperature":"79.11"},{"id":2,"date":"2025-11-09", "time":"12:21:2", "temperature":"78.23"},{"id":2,"date":"2025-11-09", "time":"12:21:3", "temperature":"78.23"},{"id":2,"date":"2025-11-09", "time":"12:21:4", "temperature":"79.11"}]}';
+const jsonString = '{"data":[{"id":1,"date":"2025-11-10", "time":"12:20:59", "temperature":"79.11", "placa": "placa2"},{"id":1,"date":"2025-11-10", "time":"12:20:60", "temperature":"78.23", "placa": "placa1"},{"id":1,"date":"2025-11-10", "time":"12:21:0", "temperature":"78.23", "placa": "placa1"},{"id":1,"date":"2025-11-10", "time":"12:21:1", "temperature":"79.11", "placa": "placa1"},{"id":1,"date":"2025-11-10", "time":"12:21:2", "temperature":"78.23", "placa": "placa1"},{"id":1,"date":"2025-11-10", "time":"12:21:3", "temperature":"78.23", "placa": "placa1"},{"id":1,"date":"2025-11-10", "time":"12:21:4", "temperature":"79.11", "placa": "placa1"},{"id":2,"date":"2025-11-10", "time":"12:20:59", "temperature":"79.11", "placa": "placa1"},{"id":2,"date":"2025-11-10", "time":"12:20:60", "temperature":"78.23", "placa": "placa2"},{"id":2,"date":"2025-11-10", "time":"12:21:0", "temperature":"78.23", "placa": "placa1"},{"id":2,"date":"2025-11-10", "time":"12:21:1", "temperature":"79.11", "placa": "placa1"},{"id":2,"date":"2025-11-10", "time":"12:21:2", "temperature":"78.23", "placa": "placa1"},{"id":2,"date":"2025-11-10", "time":"12:21:3", "temperature":"78.23", "placa": "placa1"},{"id":2,"date":"2025-11-10", "time":"12:21:4", "temperature":"79.11", "placa":"placa1"}]}';
 
 const rawData:Dados = JSON.parse(jsonString).data;
-
+let filteredData:Dados = rawData
 // função pra criar um array com algum dos parametros
 function setValues(prop:string){
-  return rawData.map(obj => obj[prop])
+  return filteredData.map(obj => obj[prop])
 }
  // função que cria o array de objetos, aplicando os filtros
 function setArrays(){
   let array = []
 
   for( const i of ids.value){
-    array.push((rawData.filter(obj => obj.id === i)).filter(obj => obj.date == day.value))
+    array.push(((rawData.filter(obj => obj.id === i)).filter(obj => obj.date == day.value)).filter(obj=>obj.placa == selectedPlaca.value))
   }
   return array
 
@@ -50,31 +52,37 @@ function setArrays(){
 // função que configura os datasets
 function setDatasets(){
   let array = setArrays();
+  console.log(array)
   let ret = [];
   let i = 0;
-
-  if(array[0].length > 0){
-    // um dataset por id do sensor
-    for(const a of array){
-      ret.push(
-        {
-          label: a[0].id,
-          backgroundColor: colors[i],
-          borderColor: colors[i],
-          data: a.map(obj => obj.temperature)
+  if(array.length > 0){
+    if(array[0].length > 0){
+        // um dataset por id do sensor
+        for(const a of array){
+          ret.push(
+            {
+              label: a[0].id,
+              backgroundColor: colors[i],
+              borderColor: colors[i],
+              data: a.map(obj => obj.temperature)
+            }
+          )
+          if(i == colors.length){
+            i = 0;
+          }
+          else{
+            i++;
+          }
         }
-      )
-      if(i == colors.length){
-        i = 0;
       }
       else{
-        i++;
+        ret.push({})
       }
-    }
   }
   else{
     ret.push({})
   }
+ 
 
   return ret
 }
@@ -96,11 +104,20 @@ const temps = ref(setValues("temperature"))
 const datasets = ref(setDatasets())
 const chartData = ref(setData());
 
-function changeDay(dia) { //atualiza os datasets quando muda o dia
-  day.value = dia
+function reload(){
+  filteredData = (rawData.filter(obj => obj.date == day.value)).filter(obj=>obj.placa == selectedPlaca.value)
+  ids.value = (new Set(setValues("id")))
+  labels.value = (Array.from(new Set(setValues("time"))))
+  temps.value = (setValues("temperature"))
   datasets.value = setDatasets();
   chartData.value = setData();
 }
+function changeDay(dia) { //atualiza os datasets quando muda o dia
+  day.value = dia
+  reload();
+}
+
+reload();
 
 const chartOptions  = {
   responsive: true,
