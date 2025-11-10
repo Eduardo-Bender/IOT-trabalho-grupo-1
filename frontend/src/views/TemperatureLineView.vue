@@ -1,7 +1,7 @@
 <template>
   <div class="flex gap-4">
     <p class="text-2xl text-black">Sensor de Temperatura</p>
-    <Calendar :day="day"></Calendar>
+    <Calendar :day="day" @input="changeDay"></Calendar>
     <select class="select w-min">
       <option>Placa</option>
     </select>
@@ -16,9 +16,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref} from "vue";
+import { ref, inject} from "vue";
 import LineChart from "@/components/LineChart.vue";
 import Calendar from "@/components/Calendar.vue";
+
+const colors = inject('colors')
 
 interface Dados {
   id: number,
@@ -26,7 +28,7 @@ interface Dados {
   hora: string;
   temperatura: number;
 }
-const jsonString = '{"data":[{"id":1,"date":"2015/7/21", "time":"12:20:59", "temperature":"79.11"},{"id":1,"date":"2015/7/21", "time":"12:20:60", "temperature":"78.23"},{"id":1,"date":"2015/7/21", "time":"12:21:0", "temperature":"78.23"},{"id":1,"date":"2015/7/21", "time":"12:21:1", "temperature":"79.11"},{"id":1,"date":"2015/7/21", "time":"12:21:2", "temperature":"78.23"},{"id":1,"date":"2015/7/21", "time":"12:21:3", "temperature":"78.23"},{"id":1,"date":"2015/7/21", "time":"12:21:4", "temperature":"79.11"},{"id":2,"date":"2015/7/21", "time":"12:20:59", "temperature":"79.11"},{"id":2,"date":"2015/7/21", "time":"12:20:60", "temperature":"78.23"},{"id":2,"date":"2015/7/21", "time":"12:21:0", "temperature":"78.23"},{"id":2,"date":"2015/7/21", "time":"12:21:1", "temperature":"79.11"},{"id":2,"date":"2015/7/21", "time":"12:21:2", "temperature":"78.23"},{"id":2,"date":"2015/7/21", "time":"12:21:3", "temperature":"78.23"},{"id":2,"date":"2015/7/21", "time":"12:21:4", "temperature":"79.11"}]}';
+const jsonString = '{"data":[{"id":1,"date":"2025-11-09", "time":"12:20:59", "temperature":"79.11"},{"id":1,"date":"2025-11-09", "time":"12:20:60", "temperature":"78.23"},{"id":1,"date":"2025-11-09", "time":"12:21:0", "temperature":"78.23"},{"id":1,"date":"2025-11-09", "time":"12:21:1", "temperature":"79.11"},{"id":1,"date":"2025-11-09", "time":"12:21:2", "temperature":"78.23"},{"id":1,"date":"2025-11-09", "time":"12:21:3", "temperature":"78.23"},{"id":1,"date":"2025-11-09", "time":"12:21:4", "temperature":"79.11"},{"id":2,"date":"2025-11-09", "time":"12:20:59", "temperature":"79.11"},{"id":2,"date":"2025-11-09", "time":"12:20:60", "temperature":"78.23"},{"id":2,"date":"2025-11-09", "time":"12:21:0", "temperature":"78.23"},{"id":2,"date":"2025-11-09", "time":"12:21:1", "temperature":"79.11"},{"id":2,"date":"2025-11-09", "time":"12:21:2", "temperature":"78.23"},{"id":2,"date":"2025-11-09", "time":"12:21:3", "temperature":"78.23"},{"id":2,"date":"2025-11-09", "time":"12:21:4", "temperature":"79.11"}]}';
 
 const rawData:Dados = JSON.parse(jsonString).data;
 
@@ -36,8 +38,9 @@ function setValues(prop:string){
 
 function setArrays(){
   let array = []
+
   for( const i of ids.value){
-    array.push(rawData.filter(obj => obj.id === i))
+    array.push((rawData.filter(obj => obj.id === i)).filter(obj => obj.date == day.value))
   }
   return array
 
@@ -46,15 +49,30 @@ function setArrays(){
 function setDatasets(){
   let array = setArrays();
   let ret = [];
-  for(const a of array){
-    ret.push(
-      {
-        label: a[0].id,
-        backgroundColor: '#f87979',
-        data: a.map(obj => obj.temperature)
+  let i = 0;
+
+  if(array[0].length > 0){
+    for(const a of array){
+      ret.push(
+        {
+          label: a[0].id,
+          backgroundColor: colors[i],
+          borderColor: colors[i],
+          data: a.map(obj => obj.temperature)
+        }
+      )
+      if(i == colors.length){
+        i = 0;
       }
-    )
+      else{
+        i++;
+      }
+    }
   }
+  else{
+    ret.push({})
+  }
+
   return ret
 }
 function setData(){
@@ -64,13 +82,21 @@ function setData(){
 }
 
 
+const date = new Date();
+const currentDate = date.getFullYear() + "-" + (date.getMonth() +1) + "-" + ("0" + date.getDate()).slice(-2);
+
 const ids = ref(new Set(setValues("id")))
-const day = ref()
+const day = ref(currentDate)
 const labels = ref(Array.from(new Set(setValues("time"))))
 const temps = ref(setValues("temperature"))
 const datasets = ref(setDatasets())
 const chartData = ref(setData());
 
+function changeDay(dia) {
+  day.value = dia
+  datasets.value = setDatasets();
+  chartData.value = setData();
+}
 
 const chartOptions  = {
   responsive: true,
