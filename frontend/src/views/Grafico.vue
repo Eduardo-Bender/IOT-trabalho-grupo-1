@@ -63,9 +63,11 @@
 <script setup>
 import { ref, computed } from 'vue'
 import TemperatureLineView from './TemperatureLineView.vue'
+import UltrasonicInterpolationView from './UltrasonicInterpolationView.vue'
 
 const graphs = {
-  '/temperatura': TemperatureLineView
+  '/temperatura': TemperatureLineView,
+  '/ultrasonico': UltrasonicInterpolationView   
 }
 
 const currentPath = ref(window.location.hash)

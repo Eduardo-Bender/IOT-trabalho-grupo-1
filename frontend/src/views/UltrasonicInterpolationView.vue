@@ -1,6 +1,6 @@
 <template>
   <div class="flex gap-4">
-    <p class="text-2xl text-black">Sensor de Temperatura</p>
+    <p class="text-2xl text-black">Sensor Ultrasônico</p>
     <Calendar :day="day" @input="changeDay" :uniqueId="uniqueID" :popover="uniqueID + 'popover'"></Calendar>
     <select class="select w-min" v-model="selectedPlaca" @change="reload()">
       <option v-for="p in placas" :id="p">{{ p }}</option>
@@ -30,7 +30,7 @@ interface Dados {
   hora: string;
   temperatura: number;
 }
-const jsonString = '{"data":[{"id":1,"date":"2025-11-10", "time":"12:20:59", "temperature":"79.11", "placa": "placa1"},{"id":1,"date":"2025-11-10", "time":"12:20:60", "temperature":"78.23", "placa": "placa1"},{"id":1,"date":"2025-11-10", "time":"12:21:0", "temperature":"78.23", "placa": "placa1"},{"id":1,"date":"2025-11-10", "time":"12:21:1", "temperature":"79.11", "placa": "placa1"},{"id":1,"date":"2025-11-10", "time":"12:21:2", "temperature":"78.23", "placa": "placa1"},{"id":1,"date":"2025-11-10", "time":"12:21:3", "temperature":"78.23", "placa": "placa1"},{"id":1,"date":"2025-11-10", "time":"12:21:4", "temperature":"79.11", "placa": "placa1"},{"id":2,"date":"2025-11-10", "time":"12:20:59", "temperature":"79.11", "placa": "placa1"},{"id":2,"date":"2025-11-10", "time":"12:20:60", "temperature":"78.23", "placa": "placa2"},{"id":2,"date":"2025-11-10", "time":"12:21:0", "temperature":"78.23", "placa": "placa1"},{"id":2,"date":"2025-11-10", "time":"12:21:1", "temperature":"79.11", "placa": "placa1"},{"id":2,"date":"2025-11-10", "time":"12:21:2", "temperature":"78.23", "placa": "placa1"},{"id":2,"date":"2025-11-10", "time":"12:21:3", "temperature":"78.23", "placa": "placa1"},{"id":2,"date":"2025-11-10", "time":"12:21:4", "temperature":"79.11", "placa":"placa1"}]}';
+const jsonString = '{"data":[{"id":1,"date":"2025-11-10", "time":"12:20:59", "distance":"79.11", "placa": "placa1"},{"id":1,"date":"2025-11-10", "time":"12:20:60", "distance":"78.23", "placa": "placa1"},{"id":1,"date":"2025-11-10", "time":"12:21:0", "distance":"78.23", "placa": "placa1"},{"id":1,"date":"2025-11-10", "time":"12:21:1", "distance":"79.11", "placa": "placa1"},{"id":1,"date":"2025-11-10", "time":"12:21:2", "distance":"78.23", "placa": "placa1"},{"id":1,"date":"2025-11-10", "time":"12:21:3", "distance":"78.23", "placa": "placa1"},{"id":1,"date":"2025-11-10", "time":"12:21:4", "distance":"79.11", "placa": "placa1"},{"id":2,"date":"2025-11-10", "time":"12:20:59", "distance":"79.11", "placa": "placa1"},{"id":2,"date":"2025-11-10", "time":"12:20:60", "distance":"78.23", "placa": "placa2"},{"id":2,"date":"2025-11-10", "time":"12:21:0", "distance":"78.23", "placa": "placa1"},{"id":2,"date":"2025-11-10", "time":"12:21:1", "distance":"79.11", "placa": "placa1"},{"id":2,"date":"2025-11-10", "time":"12:21:2", "distance":"78.23", "placa": "placa1"},{"id":2,"date":"2025-11-10", "time":"12:21:3", "distance":"78.23", "placa": "placa1"},{"id":2,"date":"2025-11-10", "time":"12:21:4", "distance":"79.11", "placa":"placa1"}]}';
 
 const rawData:Dados = JSON.parse(jsonString).data;
 let filteredData:Dados = rawData
@@ -64,7 +64,8 @@ function setDatasets(){
               label: a[0].id,
               backgroundColor: colors[i],
               borderColor: colors[i],
-              data: a.map(obj => obj.temperature)
+              data: a.map(obj => obj.distance),
+              tension: 0.4
             }
           )
           if(i == colors.length){
@@ -89,7 +90,7 @@ function setDatasets(){
 
 function setData(){
   return {  labels: labels.value,
-          datasets: datasets.value
+          datasets: datasets.value,
         }
 }
 
@@ -100,7 +101,7 @@ const uniqueID = crypto.randomUUID(); // id unico pra ser usado nos calendários
 const ids = ref(new Set(setValues("id")))
 const day = ref(currentDate) //data selecionada no calendário
 const labels = ref(Array.from(new Set(setValues("time")))) //array de horários
-const temps = ref(setValues("temperature"))
+const temps = ref(setValues("distance"))
 const datasets = ref(setDatasets())
 const chartData = ref(setData());
 
@@ -108,7 +109,7 @@ function reload(){
   filteredData = (rawData.filter(obj => obj.date == day.value)).filter(obj=>obj.placa == selectedPlaca.value)
   ids.value = (new Set(setValues("id")))
   labels.value = (Array.from(new Set(setValues("time"))))
-  temps.value = (setValues("temperature"))
+  temps.value = (setValues("distance"))
   datasets.value = setDatasets();
   chartData.value = setData();
 }

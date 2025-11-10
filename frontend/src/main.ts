@@ -12,7 +12,8 @@ const app = createApp(App)
 
 const routes = {
   '/': Dashboard,
-  '/temperatura': Grafico
+  '/temperatura': Grafico,
+  '/ultrasonico': Grafico
 }
 app.provide('routes', routes)
 
