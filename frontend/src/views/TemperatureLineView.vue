@@ -1,7 +1,7 @@
 <template>
   <div class="flex gap-4">
     <p class="text-2xl text-black">Sensor de Temperatura</p>
-    <Calendar :day="day" @input="changeDay"></Calendar>
+    <Calendar :day="day" @input="changeDay" :uniqueId="uniqueID" :popover="uniqueID + 'popover'"></Calendar>
     <select class="select w-min">
       <option>Placa</option>
     </select>
@@ -32,10 +32,11 @@ const jsonString = '{"data":[{"id":1,"date":"2025-11-09", "time":"12:20:59", "te
 
 const rawData:Dados = JSON.parse(jsonString).data;
 
+// função pra criar um array com algum dos parametros
 function setValues(prop:string){
   return rawData.map(obj => obj[prop])
 }
-
+ // função que cria o array de objetos, aplicando os filtros
 function setArrays(){
   let array = []
 
@@ -46,12 +47,14 @@ function setArrays(){
 
 }
 
+// função que configura os datasets
 function setDatasets(){
   let array = setArrays();
   let ret = [];
   let i = 0;
 
   if(array[0].length > 0){
+    // um dataset por id do sensor
     for(const a of array){
       ret.push(
         {
@@ -75,6 +78,7 @@ function setDatasets(){
 
   return ret
 }
+
 function setData(){
   return {  labels: labels.value,
           datasets: datasets.value
@@ -84,15 +88,15 @@ function setData(){
 
 const date = new Date();
 const currentDate = date.getFullYear() + "-" + (date.getMonth() +1) + "-" + ("0" + date.getDate()).slice(-2);
-
+const uniqueID = crypto.randomUUID(); // id unico pra ser usado nos calendários e não dar conflito um com o outro na dashboard
 const ids = ref(new Set(setValues("id")))
-const day = ref(currentDate)
-const labels = ref(Array.from(new Set(setValues("time"))))
+const day = ref(currentDate) //data selecionada no calendário
+const labels = ref(Array.from(new Set(setValues("time")))) //array de horários
 const temps = ref(setValues("temperature"))
 const datasets = ref(setDatasets())
 const chartData = ref(setData());
 
-function changeDay(dia) {
+function changeDay(dia) { //atualiza os datasets quando muda o dia
   day.value = dia
   datasets.value = setDatasets();
   chartData.value = setData();
