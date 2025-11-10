@@ -1,6 +1,24 @@
+/// PENDENCIAS PARA RODAR ESSA JOÇA
+/// INSTALE ATRAVES DO LIBRARY MANAGER DO ARDUINO IDE AS SEGUINTES COISAS
+/// - DHT11 by Dhruba Saha (v2.1.0+)
+/// - Ultrasonic by Erick Simões (v3.0.0+)
+/// - Keypad by Mark Stanley, Alexander Brevig (v3.1.1+)
+/// - PubSubClient by Nick O'Leary (v2.8+)
+/// - IRremote by shirriff, z3t0, ArminJo (v4.5.0+)
+
+
+
 #include <stdio.h>
-#include <Ultrasonic.h>
-#include <Keypad.h>
+//----------------------------------------------------------
+// PINOS
+#define analogTempPin A0
+#define velocidadePin 2
+// PINOS DO KEYPAD LA EM BAIXO NA SECAO DO KEYPAD
+#define dht11pin 15
+#define relePin 17
+#define somTriggerPin 21
+#define somEchoPin 22
+int RECV_PIN = 22;                          // Arduino pino D11 conectado no Receptor IR
 
 //----------------------------------------------------------
 // WIFI
@@ -19,36 +37,46 @@ int BROKER_PORT = 1883;
 WiFiClient espClient;
 PubSubClient MQTT(espClient);
 
+void setupMqtt(void);
+void init_serial(void);
+void init_wifi(void);
+void init_mqtt(void);
+void reconnect_wifi(void); 
+void mqtt_callback(char* topic, byte* payload, unsigned int length);
+void verifica_conexoes_wifi_mqtt(void);
+void mqttLoop(void);
+
 //----------------------------------------------------------
 // IREMOTE
 #include <IRremote.h>                       // Biblioteca IRemote
-int RECV_PIN = 22;                          // Arduino pino D11 conectado no Receptor IR
 IRrecv irrecv(RECV_PIN);                    // criando a instância
 decode_results results;                     // declarando os resultados
 
+void loop_ir(void);
+
 //----------------------------------------------------------
+// DHT11
 #include <DHT11.h>
-
-#define analogTempPin A0
-#define somTriggerPin 21
-#define somEchoPin 22
-
-#define relePin 17
-
-#define velocidadePin 2
-
-#define dht11pin 15
 DHT11 dht11(dht11pin);
 float temperatura;
 float umidade;
-//////////////////////////////////////////////////////////////////////////////
-///////////////////////// Shameless global variables /////////////////////////
+
+void dht11Loop(void);
+
+//----------------------------------------------------------
+// Sensor Infravermelho de movimento
 int contagemVel = 0;
 int leituraVel;
 
+void velocidadeLoop(void);
+
+//----------------------------------------------------------
+// Keypad
+#include <Keypad.h>
 const byte rows = 4;
 const byte cols = 4;
-
+byte colPins[cols] = {9, 8, 7, 6};
+byte rowPins[rows] = {13, 12, 11, 10};
 char keys[rows][cols] = {
   {'1','2','3', 'a'},
   {'4','5','6', 'b'},
@@ -56,24 +84,73 @@ char keys[rows][cols] = {
   {'#','0','*', 'd'}
 };
 
-byte rowPins[rows] = {13, 12, 11, 10};
-byte colPins[cols] = {9, 8, 7, 6};
 Keypad keypad = Keypad( makeKeymap(keys), rowPins, colPins, rows, cols );
 
+void numpadLoop(void);
+
+//----------------------------------------------------------
+// Sensor de temperatura analogico
 int valTemp= 0;
 double voltsTemp = 0;
+
+void temperaturaLoop(void);
+
+//----------------------------------------------------------
+// Sensor de distancia ultrassonico
+#include <Ultrasonic.h>
 Ultrasonic ultrasonic(somTriggerPin, somEchoPin, 40000UL);
 
-//////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
+void somLoop(void);
 
-void init_serial(void);
-void init_wifi(void);
-void init_mqtt(void);
-void reconnect_wifi(void); 
-void mqtt_callback(char* topic, byte* payload, unsigned int length);
-void verifica_conexoes_wifi_mqtt(void);
+//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
  
+void setup() {
+  Serial.begin(9600);
+  //setupMqtt();
+  pinMode(velocidadePin, INPUT);
+  pinMode(relePin, OUTPUT);
+  digitalWrite(relePin, HIGH);
+
+  irrecv.enableIRIn();
+}
+
+void loop() {
+  mqttLoop();
+  velocidadeLoop();
+  dht11Loop();
+  //temperaturaLoop();
+  // somLoop();
+  // displayLoop();
+  // botaoLoop();
+  // numpadLoop();
+  loop_ir();
+
+  delay(300);
+}
+
+void mqttLoop()
+{
+  //verifica_conexoes_wifi_mqtt();
+  //MQTT.publish(TOPICO_PUBLISH, "ESP32 se comunicando com MQTT");
+  //MQTT.loop();
+}
+
+/* Função: verifica o estado das conexões WiFI e ao broker MQTT. 
+ *         Em caso de desconexão (qualquer uma das duas), a conexão
+ *         é refeita.
+ * Parâmetros: nenhum
+ * Retorno: nenhum
+ */
+void verifica_conexoes_wifi_mqtt(void)
+{
+    /* se não há conexão com o WiFI, a conexão é refeita */
+    reconnect_wifi(); 
+    /* se não há conexão com o Broker, a conexão é refeita */
+    if (!MQTT.connected()) 
+        reconnect_mqtt(); 
+} 
+
 void setupMqtt() 
 {
     init_wifi();
@@ -155,31 +232,6 @@ void reconnect_wifi()
     Serial.println(WiFi.localIP());
 }
  
-/* Função: verifica o estado das conexões WiFI e ao broker MQTT. 
- *         Em caso de desconexão (qualquer uma das duas), a conexão
- *         é refeita.
- * Parâmetros: nenhum
- * Retorno: nenhum
- */
-void verifica_conexoes_wifi_mqtt(void)
-{
-    /* se não há conexão com o WiFI, a conexão é refeita */
-    reconnect_wifi(); 
-    /* se não há conexão com o Broker, a conexão é refeita */
-    if (!MQTT.connected()) 
-        reconnect_mqtt(); 
-} 
-
-void setup() {
-  Serial.begin(9600);
-  //setupMqtt();
-  pinMode(velocidadePin, INPUT);
-  pinMode(relePin, OUTPUT);
-  digitalWrite(relePin, HIGH);
-
-  irrecv.enableIRIn();
-}
-
 void loop_ir()
 {
   if (irrecv.decode(&results))              // se algum código for recebido
@@ -188,24 +240,6 @@ void loop_ir()
     irrecv.resume();                        // reinicializa o receptor
     delay(10);                              // atraso de 10 ms
   }
-}
-
-void loop() {
-  //verifica_conexoes_wifi_mqtt();
-  //MQTT.publish(TOPICO_PUBLISH, "ESP32 se comunicando com MQTT");
-  //MQTT.loop();
-
-  //velocidadeLoop();
-  dht11Loop();
-  //temperaturaLoop();
-  // somLoop();
-  // displayLoop();
-  // botaoLoop();
-  // numpadLoop();
-
-  loop_ir();
-
-  delay(300);
 }
 
 void velocidadeLoop()
