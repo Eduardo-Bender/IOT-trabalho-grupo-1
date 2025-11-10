@@ -5,6 +5,11 @@ const sensores = [{
   nome: 'Sensor de temperatura',
   grafico: '#/temperatura',
   tabela: '#/table/temperatura'
+},
+{
+  nome: 'Sensor Ultrasônico',
+  grafico: '#/ultrasonico',
+  tabela: '#/table/ultrasonico'
 }]
 
 const routes = inject('routes')
@@ -22,7 +27,7 @@ const currentView = computed(() => {
 
 <template>
 
-  <div class="navbar bg-base-100 shadow-sm">
+  <div class="navbar bg-base-100 shadow-sm z-4">
     <div class="navbar-start">
       <div class="dropdown">
         <div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
@@ -34,13 +39,13 @@ const currentView = computed(() => {
           <li>
             <a>Gráficos</a>
             <ul class="p-2">
-              <li v-for="g in sensores" ><a :href="g.grafico">>{{g.nome}}</a></li>
+              <li v-for="g in sensores" class="z-4"><a :href="g.grafico">>{{g.nome}}</a></li>
             </ul>
           </li>
           <li>
             <a>Dados</a>
             <ul class="p-2">
-              <li v-for="g in sensores" ><a :href="g.tabela">>{{g.nome}}</a></li>
+              <li v-for="g in sensores" class="z-4"><a :href="g.tabela">>{{g.nome}}</a></li>
             </ul>
           </li>
           <li><a>Condigurações</a></li>
@@ -54,7 +59,7 @@ const currentView = computed(() => {
           <details>
             <summary>Gráficos</summary>
             <ul class="p-0">
-              <li v-for="g in sensores"><a :href="g.grafico">>{{g.nome}}</a></li>
+              <li v-for="g in sensores" class="z-4"><a :href="g.grafico">>{{g.nome}}</a></li>
             </ul>
           </details>
         </li>
@@ -62,7 +67,7 @@ const currentView = computed(() => {
           <details>
             <summary>Dados</summary>
             <ul class="p-0">
-              <li v-for="g in sensores" ><a :href="g.tabela">>{{g.nome}}</a></li>
+              <li v-for="g in sensores" class="z-4"><a :href="g.tabela">>{{g.nome}}</a></li>
             </ul>
           </details>
         </li>
