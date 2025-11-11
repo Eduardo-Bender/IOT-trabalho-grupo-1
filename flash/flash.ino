@@ -29,7 +29,7 @@ int RECV_PIN = 22;                          // Arduino pino D11 conectado no Rec
 #define TOPICO_PUBLISH   "grupo1_publish_mqtt"  
 #define ID_MQTT  "Cliente"
 const char* SSID = "Evil UFSM"; 
-const char* PASSWORD = "cucucucu"; 
+const char* PASSWORD = "senhanova";
   
 const char* BROKER_MQTT = "broker.hivemq.com"; 
 int BROKER_PORT = 1883;
