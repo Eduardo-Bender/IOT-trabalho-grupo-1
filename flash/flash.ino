@@ -107,7 +107,7 @@ void somLoop(void);
 
 void setup() {
   Serial.begin(9600);
-  //setupMqtt();
+  setupMqtt();
   pinMode(velocidadePin, INPUT);
   pinMode(relePin, OUTPUT);
   digitalWrite(relePin, HIGH);
@@ -132,9 +132,9 @@ void loop() {
 
 void mqttLoop()
 {
-  //verifica_conexoes_wifi_mqtt();
-  //MQTT.publish(TOPICO_PUBLISH, "ESP32 se comunicando com MQTT");
-  //MQTT.loop();
+  verifica_conexoes_wifi_mqtt();
+  MQTT.publish(TOPICO_PUBLISH, "ESP32 se comunicando com MQTT");
+  MQTT.loop();
 }
 
 /* Função: verifica o estado das conexões WiFI e ao broker MQTT. 
