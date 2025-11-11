@@ -104,7 +104,7 @@ void somLoop(void);
 
 //////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
- 
+
 void setup() {
   Serial.begin(9600);
   //setupMqtt();
@@ -112,6 +112,7 @@ void setup() {
   pinMode(relePin, OUTPUT);
   digitalWrite(relePin, HIGH);
 
+  dht11.setDelay(50);
   irrecv.enableIRIn();
 }
 
@@ -119,12 +120,12 @@ void loop() {
   mqttLoop();
   velocidadeLoop();
   dht11Loop();
-  //temperaturaLoop();
-  // somLoop();
-  // displayLoop();
-  // botaoLoop();
-  // numpadLoop();
+  temperaturaLoop();
+  somLoop();
+  //displayLoop();
+  numpadLoop();
   loop_ir();
+  //botaoLoop();
 
   delay(300);
 }
@@ -238,14 +239,13 @@ void loop_ir()
   {
     Serial.println(results.value, HEX);     // imprime o HEX Code
     irrecv.resume();                        // reinicializa o receptor
-    delay(10);                              // atraso de 10 ms
   }
 }
 
 void velocidadeLoop()
 {
   leituraVel = digitalRead(velocidadePin); 
-  if ( leituraVel == 1) { 
+  if (leituraVel == 1) { 
     contagemVel++; 
     Serial.print("Numero de deteccoes: ");
     Serial.println(contagemVel);
@@ -256,10 +256,16 @@ void dht11Loop()
 {
   temperatura = dht11.readTemperature();
   umidade = dht11.readHumidity();
-  Serial.print("Temperatura: ");
-  Serial.println(temperatura);
-  Serial.print("Umidade: ");
-  Serial.println(umidade);
+  if(temperatura != DHT11::ERROR_TIMEOUT)
+  {
+    Serial.print("Temperatura: ");
+    Serial.println(temperatura);
+  }
+  if(umidade != DHT11::ERROR_TIMEOUT)
+  {
+    Serial.print("Umidade: ");
+    Serial.println(umidade);
+  }
 }
 
 void numpadLoop()
@@ -267,7 +273,7 @@ void numpadLoop()
   char key = keypad.getKey();
 
   if (key != NO_KEY){
-    //Serial.println(key);
+    Serial.println(key);
   }
 }
 
