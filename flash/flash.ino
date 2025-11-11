@@ -86,7 +86,7 @@ char keys[rows][cols] = {
 
 Keypad keypad = Keypad( makeKeymap(keys), rowPins, colPins, rows, cols );
 
-void numpadLoop(void);
+void keypadLoop(void);
 
 //----------------------------------------------------------
 // Sensor de temperatura analogico
@@ -118,15 +118,15 @@ void setup() {
 
 void loop() {
   mqttLoop();
-  velocidadeLoop();
+  somLoop();
   dht11Loop();
   temperaturaLoop();
-  somLoop();
-  //displayLoop();
-  numpadLoop();
-  loop_ir();
-  //botaoLoop();
+  velocidadeLoop(); // Precisa achar um jeito de conferir melhor se ta ou nao conectado
+  //keypadLoop();   // Precisa achar um jeito de conferir melhor se ta ou nao conectado
+  //loop_ir();      // Precisa achar um jeito de conferir melhor se ta ou nao conectado
 
+  //displayLoop();
+  //botaoLoop();
   delay(300);
 }
 
@@ -256,32 +256,42 @@ void dht11Loop()
 {
   temperatura = dht11.readTemperature();
   umidade = dht11.readHumidity();
-  if(temperatura != DHT11::ERROR_TIMEOUT)
+  if(temperatura == DHT11::ERROR_TIMEOUT || umidade == DHT11::ERROR_TIMEOUT)
   {
-    Serial.print("Temperatura: ");
-    Serial.println(temperatura);
+    Serial.println("DHT11 desconectado!");
+    return;
   }
-  if(umidade != DHT11::ERROR_TIMEOUT)
-  {
-    Serial.print("Umidade: ");
-    Serial.println(umidade);
-  }
+  Serial.print("Temperatura: ");
+  Serial.println(temperatura);
+  Serial.print("Umidade: ");
+  Serial.println(umidade);
 }
 
-void numpadLoop()
+void keypadLoop()
 {
   char key = keypad.getKey();
-
-  if (key != NO_KEY){
-    Serial.println(key);
+  if (key == NO_KEY)
+  {
+    Serial.println("Keypad desconectado!");
+    return;
+  }
+  else if (key != NO_KEY)
+  {
+    Serial.print("Tecla pressionada: ");
+    Serial.print(key);
+    Serial.println();
   }
 }
 
 void somLoop(){
   float cmMsec, inMsec;
   cmMsec = ultrasonic.read(CM);
-  inMsec = ultrasonic.read(INC);
 
+  if(cmMsec < 0 || cmMsec > 200)
+  {
+    Serial.println("Ultrassonico desconectado!");
+    return;
+  }
   Serial.print("Distancia em cm: ");
   Serial.print(cmMsec);
   Serial.println();
@@ -290,5 +300,12 @@ void somLoop(){
 void temperaturaLoop() {  
   valTemp = analogRead(analogTempPin); 
   voltsTemp = map(valTemp, 0, 1023, 0, 3300);
-  Serial.println((voltsTemp-500) * 0.1, 1);
+  float scaledTemp = (voltsTemp-500) * 0.1;
+  if(scaledTemp < 0 || scaledTemp > 100)
+  {
+    Serial.println("Temperatura desconectada!");
+    return;
+  }
+  
+  Serial.println(scaledTemp, 1);
 }
