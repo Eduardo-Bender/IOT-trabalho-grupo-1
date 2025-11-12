@@ -24,10 +24,12 @@ export default {
   },
   created() {
     this.selected = this.day;
+    console.log(this.selected)
   },
   methods: {
     myChangeMethod() {
       document.getElementById(this.uniqueId).innerText = event.target.value;
+      console.log(document.getElementById(this.uniqueId))
       this.$emit('input', document.getElementById(this.uniqueId).innerText);
     },
 
