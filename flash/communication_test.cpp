@@ -89,23 +89,41 @@ void append_temperature_data(int pin, float temperature)
     append_data("TEMP", pin, 1, temperature);
 }
 
-void append_humidity_temperature_data(int pin, float temperature, float humidity)
+void append_humidity_temperature_data(int pin, float humidity, float temperature)
 {
     check_comma_before_sensor();
-    append_data("TEMP_UMID", pin, 2, temperature, humidity);
+    append_data("UMIDADE_TEMPERATURA", pin, 2, humidity, temperature);
 }
 
-/*void append_humidity_temperature_data(int pin, float temperature, float humidity)
+void append_keypad_string(int pin, char str[10])
 {
     check_comma_before_sensor();
-    append_data("TEMP_UMID", pin, 2, temperature, humidity);
-}*/
+
+    char aux[50];
+    sprintf(aux, "{\"type\": \"%s\", \"pin\": %d, \"value\": \"%s\"}", "TECLADO", pin, str);
+    append_string_to_json(aux);
+}
 
 int main()
 {
-    create_json(10);
-    append_temperature_data(10, 15);
-    append_humidity_temperature_data(5, 26, 50);
+    /*create_json(10);
+    append_temperature_data(1, 15);
+    append_humidity_temperature_data(2, 26, 50);
+
+    char password[] = "1234";
+
+    append_keypad_string(3, password);*/
+
+    const int password_size = 4;
+
+    char password[password_size + 1];
+    password[password_size] = 0;
+
+    char char_lido = '1';
+    int password_idx = 0;
+
+    password[password_idx] = char_lido;
+    password_idx = (password_idx + 1) % password_size;
 
     printf("%s\n", get_json());
 
