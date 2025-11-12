@@ -29,7 +29,7 @@ int RECV_PIN = 22;                          // Arduino pino D11 conectado no Rec
 #define TOPICO_PUBLISH   "grupo1_publish_mqtt"  
 #define ID_MQTT  "Cliente"
 const char* SSID = "Evil UFSM"; 
-const char* PASSWORD = "cucucucu"; 
+const char* PASSWORD = "senhanova";
   
 const char* BROKER_MQTT = "broker.hivemq.com"; 
 int BROKER_PORT = 1883;
@@ -102,12 +102,22 @@ Ultrasonic ultrasonic(somTriggerPin, somEchoPin, 40000UL);
 
 void somLoop(void);
 
+//----------------------------------------------------------
+// Giroscopio e acelerometro MPU6050 
+#include <Wire.h>
+const int MPU=0x68;  
+int AcX,AcY,AcZ,Tmp,GyX,GyY,GyZ;
+
+void setupAcelerometro(void);
+void acelerometroLoop(void);
+
 //////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
 void setup() {
   Serial.begin(9600);
-  //setupMqtt();
+  setupAcelerometro();
+  setupMqtt();
   pinMode(velocidadePin, INPUT);
   pinMode(relePin, OUTPUT);
   digitalWrite(relePin, HIGH);
@@ -124,6 +134,7 @@ void loop() {
   velocidadeLoop(); // Precisa achar um jeito de conferir melhor se ta ou nao conectado
   //keypadLoop();   // Precisa achar um jeito de conferir melhor se ta ou nao conectado
   //loop_ir();      // Precisa achar um jeito de conferir melhor se ta ou nao conectado
+  acelerometroLoop();
 
   //displayLoop();
   //botaoLoop();
@@ -132,9 +143,9 @@ void loop() {
 
 void mqttLoop()
 {
-  //verifica_conexoes_wifi_mqtt();
-  //MQTT.publish(TOPICO_PUBLISH, "ESP32 se comunicando com MQTT");
-  //MQTT.loop();
+  verifica_conexoes_wifi_mqtt();
+  MQTT.publish(TOPICO_PUBLISH, "ESP32 se comunicando com MQTT");
+  MQTT.loop();
 }
 
 /* Função: verifica o estado das conexões WiFI e ao broker MQTT. 
@@ -232,6 +243,16 @@ void reconnect_wifi()
     Serial.println("IP obtido: ");
     Serial.println(WiFi.localIP());
 }
+
+void setupAcelerometro()
+{
+  Wire.begin();
+  Wire.beginTransmission(MPU);
+  Wire.write(0x6B); 
+   
+  Wire.write(0); 
+  Wire.endTransmission(true);
+}
  
 void loop_ir()
 {
@@ -258,7 +279,6 @@ void dht11Loop()
   umidade = dht11.readHumidity();
   if(temperatura == DHT11::ERROR_TIMEOUT || umidade == DHT11::ERROR_TIMEOUT)
   {
-    Serial.println("DHT11 desconectado!");
     return;
   }
   Serial.print("Temperatura: ");
@@ -272,7 +292,6 @@ void keypadLoop()
   char key = keypad.getKey();
   if (key == NO_KEY)
   {
-    Serial.println("Keypad desconectado!");
     return;
   }
   else if (key != NO_KEY)
@@ -289,7 +308,6 @@ void somLoop(){
 
   if(cmMsec < 0 || cmMsec > 200)
   {
-    Serial.println("Ultrassonico desconectado!");
     return;
   }
   Serial.print("Distancia em cm: ");
@@ -303,9 +321,43 @@ void temperaturaLoop() {
   float scaledTemp = (voltsTemp-500) * 0.1;
   if(scaledTemp < 0 || scaledTemp > 100)
   {
-    Serial.println("Temperatura desconectada!");
     return;
   }
   
   Serial.println(scaledTemp, 1);
+}
+
+void acelerometroLoop() {
+  Wire.beginTransmission(MPU);
+  Wire.write(0x3B);  
+  Wire.endTransmission(false);
+  
+  //Solicita os dados do sensor
+  Wire.requestFrom(MPU,14,true);  
+  
+  //Armazena o valor dos sensores nas variaveis correspondentes
+  AcX=Wire.read()<<8|Wire.read();      
+  AcY=Wire.read()<<8|Wire.read(); 
+  AcZ=Wire.read()<<8|Wire.read(); 
+  Tmp=Wire.read()<<8|Wire.read(); 
+  GyX=Wire.read()<<8|Wire.read(); 
+  GyY=Wire.read()<<8|Wire.read(); 
+  GyZ=Wire.read()<<8|Wire.read(); 
+
+   
+  //Mostra os valores na serial
+  Serial.print("AcX = "); 
+  Serial.print(AcX);
+  Serial.print(" | Y = "); 
+  Serial.print(AcY);
+  Serial.print(" | Z = "); 
+  Serial.print(AcZ);
+  Serial.print(" | Gir. X = "); 
+  Serial.print(GyX);
+  Serial.print(" | Y = "); 
+  Serial.print(GyY);
+  Serial.print(" | Z = "); 
+  Serial.print(GyZ);
+  Serial.print(" | Temp = "); 
+  Serial.println(Tmp/340.00+36.53);
 }
