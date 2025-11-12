@@ -1,18 +1,5 @@
 const service = require('../services');
 
-const sensorsDict = {
-  0: "SensorTemperatura",
-  1: "SensorUltrasonico",
-  2: "SensorAcelerometroEGiroscopio",
-  3: "SensorGestosECor",
-  4: "SensorVelocidadeEncoder",
-  5: "SensorModuloRele",
-  6: "EstadoMotorVibracao",
-  7: "SensorJoystick",
-  8: "SensorTeclado",
-  9: "SensorIR",
-  10: "SensorUmidadeETemperatura",
-};
 
 // Recebe dados MQTT e processa
 exports.processarDadosMQTT = async (req, res) => {
@@ -101,6 +88,28 @@ exports.listarSensorPorTipoEPlaca = async (req, res) => {
     const { sensorTipo, placaId } = req.params;
     console.log("\n Listar leituras de um tipo de sensor por placa ", sensorTipo, placaId);
     const leituras = await service.listarSensorPorTipoEPlaca(sensorTipo, placaId);
+    res.json(leituras);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+// Listar leituras de um tipo de sensor por PIN
+exports.listarSensorPorPin = async (req, res) => {
+  try {
+    const { sensorTipo, pin } = req.params;
+    const leituras = await service.listarSensorPorPin(sensorTipo, parseInt(pin));
+    res.json(leituras);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+// Listar leituras de um tipo de sensor por PIN e PLACA
+exports.listarSensorPorPinEPlaca = async (req, res) => {
+  try {
+    const { sensorTipo, pin, placaId } = req.params;
+    const leituras = await service.listarSensorPorPinEPlaca(sensorTipo, parseInt(pin), placaId);
     res.json(leituras);
   } catch (error) {
     res.status(400).json({ error: error.message });
