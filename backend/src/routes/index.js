@@ -2,15 +2,16 @@ const express = require('express');
 const router = express.Router();
 const ctrl = require('../controllers');
 
-router.post('/sensores', ctrl.criarLeitura);
-router.get('/sensores', ctrl.listarLeituras);
-router.get('/sensores/:id', ctrl.buscarLeitura);
-router.delete('/sensores/:id', ctrl.removerLeitura);
+// Rota principal para receber dados MQTT
+router.post('/dados', ctrl.processarDadosMQTT);
 
-router.get('/placa/:id', ctrl.buscarPlaca);
-router.post('/placa', ctrl.criarPlaca);
-router.get('/placa', ctrl.listarPlacas);
-router.delete('/placa/:id', ctrl.removerPlaca);
+// Rotas de Placas
+router.get('/placas', ctrl.listarPlacas);
+router.get('/placas/:id', ctrl.buscarPlaca);
+router.delete('/placas/:id', ctrl.removerPlaca);
 
+// Rotas de Sensores
+router.get('/sensores/:sensorTipo', ctrl.listarSensorPorTipo);
+router.get('/sensores/:sensorTipo/:placaId', ctrl.listarSensorPorTipoEPlaca);
 
 module.exports = router;
