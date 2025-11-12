@@ -7,7 +7,7 @@
             <option v-for="s in sensores" :id="s.nome" :value="s.id">{{s.nome}}</option>
             </select>
         </div>
-        <div class="h-70">
+        <div class="h-65">
             <component :is="sensores.filter(obj => obj.id == g1)[0].grafico"/>
         </div>
 
@@ -19,7 +19,7 @@
             <option v-for="s in sensores" :id="s.nome" :value="s.id">{{s.nome}}</option>
             </select>
         </div>
-        <div class="h-70">
+        <div class="h-65">
             <component :is="sensores.filter(obj => obj.id == g2)[0].grafico"/>
         </div>
 
@@ -30,7 +30,7 @@
             <option v-for="s in sensores" :id="s.nome" :value="s.id">{{s.nome}}</option>
             </select>
         </div>
-        <div class="h-70">
+        <div class="h-65">
             <component :is="sensores.filter(obj => obj.id == g3)[0].grafico"/>
         </div>
     </div>
@@ -40,7 +40,7 @@
             <option v-for="s in sensores" :id="s.nome" :value="s.id">{{s.nome}}</option>
             </select>
         </div>
-        <div class="h-70">
+        <div class="h-65">
             <component :is="sensores.filter(obj => obj.id == g4)[0].grafico"/>
         </div>
     </div>
@@ -50,7 +50,7 @@
             <option v-for="s in sensores" :id="s.nome" :value="s.id">{{s.nome}}</option>
             </select>
         </div>
-        <div class="h-70">
+        <div class="h-65">
             <component :is="sensores.filter(obj => obj.id == g5)[0].grafico"/>
         </div>
     </div>
@@ -60,7 +60,7 @@
             <option v-for="s in sensores" :id="s.nome" :value="s.id">{{s.nome}}</option>
             </select>
         </div>
-        <div class="h-70">
+        <div class="h-65">
             <component :is="sensores.filter(obj => obj.id == g6)[0].grafico"/>
         </div>
     </div>

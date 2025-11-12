@@ -46,7 +46,7 @@ async function renderData(){
 
   yValue.value = filteredData.value.map(obj => obj.temperatura)
 
-  labels.value = Array.from(new Set(filteredData.value.map(obj => obj.dataHora.slice(10,19)))) //array de horários
+  labels.value = Array.from(new Set(filteredData.value.map(obj => obj.dataHora.slice(11,19)))) //array de horários
 
   datasets.value = setDatasets()
   chartData.value = setData()
