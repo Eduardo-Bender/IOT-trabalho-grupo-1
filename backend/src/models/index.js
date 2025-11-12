@@ -17,6 +17,7 @@ const Placa = sequelize.define('Placa', {
 // Sensor de Temperatura (DHT11 - temperatura)
 const SensorTemperatura = sequelize.define('SensorTemperatura', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  pin: { type: DataTypes.INTEGER, allowNull: false }, // Adicione este campo
   temperatura: { type: DataTypes.FLOAT, allowNull: false },
   dataHora: { type: DataTypes.DATE, allowNull: false, defaultValue: Sequelize.NOW },
 });
@@ -24,56 +25,63 @@ const SensorTemperatura = sequelize.define('SensorTemperatura', {
 // Sensor Ultrassônico (Distância)
 const SensorUltrasonico = sequelize.define('SensorUltrasonico', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  distancia: { type: DataTypes.FLOAT, allowNull: false }, // em cm
+  pin: { type: DataTypes.INTEGER, allowNull: false }, // Adicione este campo
+  distancia: { type: DataTypes.FLOAT, allowNull: false },
   dataHora: { type: DataTypes.DATE, allowNull: false, defaultValue: Sequelize.NOW },
 });
 
 // Sensor de Umidade e Temperatura (DHT11 - temperatura + umidade)
 const SensorUmidadeETemperatura = sequelize.define('SensorUmidadeETemperatura', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  pin: { type: DataTypes.INTEGER, allowNull: false }, // Adicione este campo
   temperatura: { type: DataTypes.FLOAT, allowNull: false },
-  umidade: { type: DataTypes.FLOAT, allowNull: false }, // em %
+  umidade: { type: DataTypes.FLOAT, allowNull: false },
   dataHora: { type: DataTypes.DATE, allowNull: false, defaultValue: Sequelize.NOW },
 });
 
 // Sensor de Velocidade (Encoder - contador de pulsos)
 const SensorVelocidadeEncoder = sequelize.define('SensorVelocidadeEncoder', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  contagem: { type: DataTypes.INTEGER, allowNull: false }, // número de detecções
+  pin: { type: DataTypes.INTEGER, allowNull: false }, // Adicione este campo
+  contagem: { type: DataTypes.INTEGER, allowNull: false },
   dataHora: { type: DataTypes.DATE, allowNull: false, defaultValue: Sequelize.NOW },
 });
 
 // Sensor Acelerômetro e Giroscópio (MPU6050)
 const SensorAcelerometroEGiroscopio = sequelize.define('SensorAcelerometroEGiroscopio', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  pin: { type: DataTypes.INTEGER, allowNull: false }, // Adicione este campo
   acel_x: { type: DataTypes.FLOAT, allowNull: false },
   acel_y: { type: DataTypes.FLOAT, allowNull: false },
   acel_z: { type: DataTypes.FLOAT, allowNull: false },
   giro_x: { type: DataTypes.FLOAT, allowNull: false },
   giro_y: { type: DataTypes.FLOAT, allowNull: false },
   giro_z: { type: DataTypes.FLOAT, allowNull: false },
-  temperatura_mpu: { type: DataTypes.FLOAT, allowNull: true }, // Tmp/340.00+36.53
+  temperatura_mpu: { type: DataTypes.FLOAT, allowNull: true },
   dataHora: { type: DataTypes.DATE, allowNull: false, defaultValue: Sequelize.NOW },
 });
 
 // Sensor IR (Controle Remoto Infravermelho)
 const SensorIR = sequelize.define('SensorIR', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  codigo: { type: DataTypes.STRING, allowNull: false }, // Código HEX recebido
+  pin: { type: DataTypes.INTEGER, allowNull: false }, // Adicione este campo
+  codigo: { type: DataTypes.STRING, allowNull: false },
   dataHora: { type: DataTypes.DATE, allowNull: false, defaultValue: Sequelize.NOW },
 });
 
 // Sensor Teclado (Keypad)
 const SensorTeclado = sequelize.define('SensorTeclado', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  tecla: { type: DataTypes.STRING, allowNull: false }, // Tecla pressionada (1-9, *, #, a-d)
+  pin: { type: DataTypes.INTEGER, allowNull: false }, // Adicione este campo
+  tecla: { type: DataTypes.STRING, allowNull: false },
   dataHora: { type: DataTypes.DATE, allowNull: false, defaultValue: Sequelize.NOW },
 });
 
 // Sensor Módulo Relé
 const SensorModuloRele = sequelize.define('SensorModuloRele', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  ligado: { type: DataTypes.BOOLEAN, allowNull: false }, // true = HIGH, false = LOW
+  pin: { type: DataTypes.INTEGER, allowNull: false }, // Adicione este campo
+  ligado: { type: DataTypes.BOOLEAN, allowNull: false },
   dataHora: { type: DataTypes.DATE, allowNull: false, defaultValue: Sequelize.NOW },
 });
 

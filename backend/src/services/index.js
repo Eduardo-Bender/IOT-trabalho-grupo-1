@@ -64,62 +64,32 @@ async function salvarDadosSensor(placaId, sensorTipo, pin, value) {
 function prepararDadosSensor(sensorTipo, pin, value) {
   switch (sensorTipo) {
     case 'TEMP':
-      return { temperatura: value };
-    
+      return { pin, temperatura: value };
     case 'ULTRASSONICO':
-      return { distancia: value };
-    
+      return { pin, distancia: value };
+    case 'UMIDADE_TEMPERATURA':
+      return { pin, temperatura: value.temperatura || 0, umidade: value.umidade || 0 };
+    case 'VELOCIDADE_ENCODER':
+      return { pin, contagem: value };
     case 'ACELEROMETRO_GIROSCOPIO':
-      // Espera um objeto com acel_x, acel_y, acel_z, giro_x, giro_y, giro_z
       return {
+        pin,
         acel_x: value.acel_x || 0,
         acel_y: value.acel_y || 0,
         acel_z: value.acel_z || 0,
         giro_x: value.giro_x || 0,
         giro_y: value.giro_y || 0,
         giro_z: value.giro_z || 0,
+        temperatura_mpu: value.temperatura_mpu || null,
       };
-    
-    case 'GESTOS_COR':
-      return {
-        cor_r: value.cor_r || 0,
-        cor_g: value.cor_g || 0,
-        cor_b: value.cor_b || 0,
-        cor_c: value.cor_c || 0,
-        proximidade: value.proximidade || 0,
-        gesto: value.gesto || null,
-      };
-    
-    case 'VELOCIDADE_ENCODER':
-      return { velocidade: value };
-    
-    case 'MODULO_RELE':
-      return { ligado: Boolean(value) };
-    
-    case 'MOTOR_VIBRACAO':
-      return { ligado: Boolean(value) };
-    
-    case 'JOYSTICK':
-      return {
-        eixo_x: value.eixo_x || 0,
-        eixo_y: value.eixo_y || 0,
-        botao: value.botao || false,
-      };
-    
-    case 'TECLADO':
-      return { tecla: String(value) };
-    
     case 'IR':
-      return { codigo: String(value) };
-    
-    case 'UMIDADE_TEMPERATURA':
-      return {
-        temperatura: value.temperatura || 0,
-        umidade: value.umidade || 0,
-      };
-    
+      return { pin, codigo: String(value) };
+    case 'TECLADO':
+      return { pin, tecla: String(value) };
+    case 'MODULO_RELE':
+      return { pin, ligado: Boolean(value) };
     default:
-      return {};
+      return { pin };
   }
 }
 
@@ -136,6 +106,26 @@ async function listarSensorPorTipoEPlaca(sensorTipo, placaId) {
   if (!SensorModel) throw new Error(`Sensor tipo '${sensorTipo}' não encontrado`);
   return await SensorModel.findAll({
     where: { placaId },
+    order: [['dataHora', 'DESC']],
+  });
+}
+
+// Listar leituras por pin
+async function listarSensorPorPin(sensorTipo, pin) {
+  const SensorModel = sensorsMap[sensorTipo];
+  if (!SensorModel) throw new Error(`Sensor tipo '${sensorTipo}' não encontrado`);
+  return await SensorModel.findAll({
+    where: { pin },
+    order: [['dataHora', 'DESC']],
+  });
+}
+
+// Listar leituras por pin e placa
+async function listarSensorPorPinEPlaca(sensorTipo, pin, placaId) {
+  const SensorModel = sensorsMap[sensorTipo];
+  if (!SensorModel) throw new Error(`Sensor tipo '${sensorTipo}' não encontrado`);
+  return await SensorModel.findAll({
+    where: { pin, placaId },
     order: [['dataHora', 'DESC']],
   });
 }
@@ -161,4 +151,6 @@ module.exports = {
   listarPlacas,
   buscarPlaca,
   removerPlaca,
+  listarSensorPorPin,
+  listarSensorPorPinEPlaca,
 };
