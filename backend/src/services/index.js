@@ -31,9 +31,11 @@ const sensorsMap = {
 // Garante que a placa existe
 async function garantirPlacaExiste(placaId) {
   const placa = await Placa.findByPk(placaId);
+  console.log("entrei aqui? ",placa, placaId);
   if (!placa) {
-    return await Placa.create({ id: placaId, nome: `Placa-${placaId}` });
+    return await Placa.create({ id: placaId });
   }
+  console.log("entrei aqui! ",placa);
   return placa;
 }
 

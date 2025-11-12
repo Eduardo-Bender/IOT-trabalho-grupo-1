@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const ctrl = require('../controllers');
 
-// Rota principal para receber dados MQTT
+//rota pra receber dados mqtt
 router.post('/dados', ctrl.processarDadosMQTT);
 
 // Rotas de Placas
