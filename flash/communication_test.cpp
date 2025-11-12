@@ -89,11 +89,23 @@ void append_temperature_data(int pin, float temperature)
     append_data("TEMP", pin, 1, temperature);
 }
 
+void append_humidity_temperature_data(int pin, float temperature, float humidity)
+{
+    check_comma_before_sensor();
+    append_data("TEMP_UMID", pin, 2, temperature, humidity);
+}
+
+/*void append_humidity_temperature_data(int pin, float temperature, float humidity)
+{
+    check_comma_before_sensor();
+    append_data("TEMP_UMID", pin, 2, temperature, humidity);
+}*/
+
 int main()
 {
     create_json(10);
     append_temperature_data(10, 15);
-    append_temperature_data(15, 50);
+    append_humidity_temperature_data(5, 26, 50);
 
     printf("%s\n", get_json());
 
