@@ -8,8 +8,8 @@ const sensores = [{
 },
 {
   nome: 'Sensor Ultrasônico',
-  grafico: '#/ultrasonico',
-  tabela: '#/table/ultrasonico'
+  grafico: '#/ultrassonico',
+  tabela: '#/table/ultrassonico'
 }]
 
 const routes = inject('routes')
@@ -48,7 +48,6 @@ const currentView = computed(() => {
               <li v-for="g in sensores" class="z-4"><a :href="g.tabela">>{{g.nome}}</a></li>
             </ul>
           </li>
-          <li><a>Condigurações</a></li>
         </ul>
       </div>
       <a class="btn btn-ghost text-xl" href="#/">NomeSistema</a>
@@ -71,7 +70,6 @@ const currentView = computed(() => {
             </ul>
           </details>
         </li>
-        <li><a>Configurações</a></li>
       </ul>
     </div>
     <div class="navbar-end">

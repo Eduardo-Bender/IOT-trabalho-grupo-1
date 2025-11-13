@@ -16,7 +16,17 @@
 <script>
 
 export default {
-  props: ['day', 'uniqueId', 'popover'],
+  props: {
+    day: {
+      type: String
+    },
+    uniqueId: {
+      default: 'popover'
+    },
+    popover:{
+      default: 'popoverp'
+    }
+  },
   data() {
     return {
       selected: '',

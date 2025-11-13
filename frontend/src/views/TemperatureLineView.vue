@@ -157,8 +157,8 @@ onMounted(async () => {
           maintainAspectRatio: false,
           scales: {
             y:{
-              min: Math.min(...yValue.value) - 1,
-              max: Math.max(...yValue.value) + 1
+              min: Math.min(...yValue.value) - 0.5,
+              max: Math.max(...yValue.value) + 0.5
             }
           },
           plugins: {

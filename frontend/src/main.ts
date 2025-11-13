@@ -5,15 +5,17 @@ import App from './App.vue'
 import "cally"
 import { provide } from 'vue'
 import Dashboard from './views/Dashboard.vue'
-import TemperatureLineView from './views/TemperatureLineView.vue'
 import Grafico from './views/Grafico.vue'
+import Dados from './views/Dados.vue'
 
 const app = createApp(App)
 
 const routes = {
   '/': Dashboard,
   '/temperatura': Grafico,
-  '/ultrasonico': Grafico
+  '/ultrassonico': Grafico,
+  '/table/temperatura': Dados,
+  '/table/ultrassonico': Dados
 }
 app.provide('routes', routes)
 
