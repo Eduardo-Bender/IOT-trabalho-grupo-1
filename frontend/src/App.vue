@@ -10,6 +10,11 @@ const sensores = [{
   nome: 'Sensor Ultrasônico',
   grafico: '#/ultrassonico',
   tabela: '#/table/ultrassonico'
+},
+{
+  nome: 'Sensor de Umidade e Temperatura',
+  grafico: '#/umidtemp',
+  tabela: '#/table/umidtemp'
 }]
 
 const routes = inject('routes')

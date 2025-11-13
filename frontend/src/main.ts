@@ -14,8 +14,10 @@ const routes = {
   '/': Dashboard,
   '/temperatura': Grafico,
   '/ultrassonico': Grafico,
+  '/umidtemp': Grafico,
   '/table/temperatura': Dados,
-  '/table/ultrassonico': Dados
+  '/table/ultrassonico': Dados,
+  '/table/umidtemp': Dados
 }
 app.provide('routes', routes)
 

@@ -19,6 +19,7 @@
 import { ref, computed } from 'vue'
 import TemperatureLineView from './TemperatureLineView.vue'
 import UltrasonicInterpolationView from './UltrasonicInterpolationView.vue'
+import UmidadeTempMultiAxisView from './UmidadeTempMultiAxisView.vue'
 
 const graphs = [{
     nome: 'Temperatura',
@@ -29,6 +30,11 @@ const graphs = [{
     nome: 'Ultrassônico',
     url: '/ultrassonico',
     view: UltrasonicInterpolationView
+},
+{
+    nome: 'Umidade e Temperatura',
+    url: '/umidtemp',
+    view: UmidadeTempMultiAxisView
 }]
 
 const currentPath = ref(window.location.hash)

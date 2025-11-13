@@ -55,6 +55,14 @@ const tables = [{
     cols: ['ID', 'Pin', 'Distância', 'Data e hora'],
     props: ['id', 'pín', 'distancia', 'dataHora']
 
+},
+{
+    nome: 'Umidade e Temperatura',
+    url: '/table/umidtemp',
+    cod: 'UMIDADE_TEMPERATURA',
+    cols: ['ID', 'Pin', 'Temperatura', 'Umidade', 'Data e hora'],
+    props: ['id', 'pín', 'temperatura','umidade', 'dataHora']
+
 }]
 
 const currentPath = ref(window.location.hash)

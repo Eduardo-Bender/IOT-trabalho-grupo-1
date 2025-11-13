@@ -1,6 +1,6 @@
 <template>
   <div class="flex gap-4" >
-    <p class="text-2xl text-black">Sensor Ultrassônico</p>
+    <p class="text-2xl text-black">Sensor de Umidade e Temperatura</p>
     <Calendar :day="day" @input="changeDay" :uniqueId="uniqueID" :popover="uniqueID + 'popover'"></Calendar>
     <select v-if="!isLoading" class="select w-min" v-model="selectedPlaca" @change="changePlaca()">
       <option v-for="p in placas" :id="p">{{ p }}</option>
@@ -31,6 +31,7 @@ const date = new Date();
 const currentDate = date.getFullYear() + "-" + (date.getMonth() +1) + "-" + ("0" + date.getDate()).slice(-2);
 const day = ref(currentDate) //data selecionada no calendário
 const yValue = ref()
+const y1Value = ref()
 const datasets = ref()
 const chartData = ref();
 const chartOptions  = ref({})
@@ -39,23 +40,37 @@ const isLoading = ref(true)
 async function renderData(){
   isLoading.value = true
   
-  filteredData.value  = await getData('sensores/ULTRASSONICO/' + selectedPlaca.value)
+  filteredData.value  = await getData('sensores/UMIDADE_TEMPERATURA/' + selectedPlaca.value)
 
   pins.value = Array.from(new Set(filteredData.value.map(obj => obj.pin)))
 
   yValue.value = filteredData.value.map(obj => obj.temperatura)
+  y1Value.value = filteredData.value.map(obj => obj.umidade)
 
   datasets.value = setDatasets()
   chartData.value = setData()
 
   isLoading.value = false
-   chartOptions.value = {
+
+  chartOptions.value = {
           responsive: true,
           maintainAspectRatio: false,
           scales: {
-            y:{
-              min: Math.min(...yValue.value) - 1,
-              max: Math.max(...yValue.value) + 1
+            temperaturaAxis:{
+              min: Math.min(...yValue.value) - 0.5,
+              max: Math.max(...yValue.value) + 0.5,
+              display: true,
+              position:'left',
+              type: 'linear'
+            },
+            umidadeAxis:{
+              max: 60,
+              position:'right',
+              type: 'linear',
+              display: true,
+              grid:{
+                drawOnChartArea: false
+              }
             }
           },
           plugins: {
@@ -64,7 +79,10 @@ async function renderData(){
                   align: 'end',  // Align the label to the end of the bar
                   formatter: (value, context) => {
                     // Customize the label text here
-                    return value.distancia; // Displays the raw data value
+                    console.log(context)
+                    if(context.dataset.label.includes('Temperatura'))
+                        return value.temperatura; // Displays the raw data value
+                    return value.umidade
                   },
                   color: 'black', // Set label color
                   font: {
@@ -73,8 +91,8 @@ async function renderData(){
                 }
               }
           }
-}
 
+}
 
  // função que cria o array de objetos, aplicando os filtros
 function setArrays(){
@@ -82,8 +100,8 @@ function setArrays(){
 
   for( const i of pins.value){
     array.push((filteredData.value.filter(obj => obj.pin === i)).filter(obj => obj.dataHora.slice(0,10) == day.value))
-  }
 
+    }
   return array
 
 }
@@ -92,22 +110,34 @@ function setArrays(){
 function setDatasets(){
   let array = setArrays();
   let ret = [];
-  let i = 1;
+  let i = 2;
   if(array.length > 0){
     if(array[0].length > 0){
         // um dataset por pin do sensor
         for(const a of array){
           ret.push(
             {
-              label: a[0].pin,
+              label: a[0].pin + " - Temperatura",
               backgroundColor: colors[i],
               borderColor: colors[i],
               data: a,
+              parsing: {
+                xAxisKey: 'dataHora',
+                yAxisKey: 'temperatura'
+              },
+              yAxisID: 'temperaturaAxis'
+            },
+            {
+              label: a[0].pin + " - Umidade",
+              backgroundColor: colors[i] + '80',
+              borderColor: colors[i],
+              borderDash: [5, 5],
+              data: a,
               parsing:{
                 xAxisKey: 'dataHora',
-                yAxisKey: 'distancia'
+                yAxisKey: 'umidade'
               },
-              tension: 0.4
+              yAxisID: 'umidadeAxis'
             }
           )
           if(i == colors.length){
@@ -131,8 +161,7 @@ function setDatasets(){
 }
 
 function setData(){
-  return {
-          datasets: datasets.value
+  return {           datasets: datasets.value
         }
 }
 
@@ -145,18 +174,20 @@ async function changePlaca(){
   await renderData()
 }
 import axios from 'axios';
-// const savejson = { "esp_id": 10, "sensors": [{"type": "TEMP", "value": 15.000000}, {"type": "TEMP_UMID", "value": [26.000000, 50.000000]}, {"type": "PASSWORD", "value": "1234"}]}
+const savejson = { "esp_id": 111, "sensors": [{"type": "UMIDADE_TEMPERATURA", "value": {"temperatura":25.500000, "umidade":50.000000}, "pin":3}]}
 
-// function salvar(){
+function salvar(){
 
-// axios.post('http://localhost:3001/api/dados', savejson)
-//   .then(function (response) {
-//     console.log(response);
-//   })
-//   .catch(function (error) {
-//     console.log(error);
-//   });
-// }
+axios.post('http://localhost:3001/api/dados', savejson)
+  .then(function (response) {
+    console.log(response);
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+}
+
+// salvar()
 
 async function getData(busca:string){
   
@@ -177,8 +208,6 @@ onMounted(async () => {
   placas.value = placas.value.map(obj => obj.id)
   selectedPlaca.value = placas.value[0]
   await renderData()
-
- 
-
+  
 })
 </script>

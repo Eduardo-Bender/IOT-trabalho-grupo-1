@@ -50,8 +50,33 @@ async function renderData(){
 
   datasets.value = setDatasets()
   chartData.value = setData()
+    console.log(chartData.value);
 
   isLoading.value = false
+    chartOptions.value = {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y:{
+              min: Math.min(...yValue.value) - 0.5,
+              max: Math.max(...yValue.value) + 0.5
+            }
+          },
+          plugins: {
+                datalabels: {
+                  anchor: 'end', // Position the label at the end of the bar
+                  align: 'end',  // Align the label to the end of the bar
+                  formatter: (value, context) => {
+                    // Customize the label text here
+                    return value.temperatura; // Displays the raw data value
+                  },
+                  color: 'black', // Set label color
+                  font: {
+                    weight: 'bold' // Set font weight
+                  }
+                }
+              }
+          }
 }
 
 
@@ -81,7 +106,11 @@ function setDatasets(){
               label: a[0].pin,
               backgroundColor: colors[i],
               borderColor: colors[i],
-              data: a.map(obj => obj.temperatura)
+              data: a,
+              parsing: {
+                xAxisKey: 'dataHora',
+                yAxisKey: 'temperatura'
+              }
             }
           )
           if(i == colors.length){
@@ -105,7 +134,7 @@ function setDatasets(){
 }
 
 function setData(){
-  return {  labels: labels.value,
+  return {
           datasets: datasets.value
         }
 }
@@ -136,6 +165,7 @@ async function getData(busca:string){
   
   try{
     const response = await axios.get('http://localhost:3001/api/' + busca)
+
     return response.data
 
   } catch (error) {
@@ -152,30 +182,7 @@ onMounted(async () => {
   selectedPlaca.value = placas.value[0]
   await renderData()
 
-  chartOptions.value = {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            y:{
-              min: Math.min(...yValue.value) - 0.5,
-              max: Math.max(...yValue.value) + 0.5
-            }
-          },
-          plugins: {
-                datalabels: {
-                  anchor: 'end', // Position the label at the end of the bar
-                  align: 'end',  // Align the label to the end of the bar
-                  formatter: (value, context) => {
-                    // Customize the label text here
-                    return value; // Displays the raw data value
-                  },
-                  color: 'black', // Set label color
-                  font: {
-                    weight: 'bold' // Set font weight
-                  }
-                }
-              }
-          }
+
 
 })
 </script>
