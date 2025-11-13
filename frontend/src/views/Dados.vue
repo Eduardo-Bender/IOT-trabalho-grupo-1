@@ -69,6 +69,7 @@ const currentPath = ref(window.location.hash)
 
 window.addEventListener('hashchange', () => {
   currentPath.value = window.location.hash
+   renderData()
 })
 
 

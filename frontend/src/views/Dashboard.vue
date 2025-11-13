@@ -72,6 +72,7 @@
 import {ref, watch} from 'vue';
 import TemperatureLineView from './TemperatureLineView.vue';
 import UltrasonicInterpolationView from './UltrasonicInterpolationView.vue';
+import UmidadeTempMultiAxisView from './UmidadeTempMultiAxisView.vue';
 
 const sensores = [{
   nome: 'Temperatura',
@@ -82,13 +83,18 @@ const sensores = [{
   nome: 'Ultrasônico',
   grafico: UltrasonicInterpolationView,
   id: 2
+},
+{
+    nome: 'Temperatura e Umidade',
+    grafico: UmidadeTempMultiAxisView,
+    id:3
 }]
 
 const ids = sensores.map(obj => obj.id)
 
 const g1 = ref(1);
 const g2 = ref(2);
-const g3 = ref(2);
+const g3 = ref(3);
 const g4 = ref(2);
 const g5 = ref(2);
 const g6 = ref(2);

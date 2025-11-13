@@ -54,8 +54,8 @@ async function renderData(){
           maintainAspectRatio: false,
           scales: {
             y:{
-              min: Math.min(...yValue.value) - 1,
-              max: Math.max(...yValue.value) + 1
+              min: Math.min(...yValue.value) - 2,
+              max: Math.max(...yValue.value) + 2
             }
           },
           plugins: {
@@ -145,18 +145,20 @@ async function changePlaca(){
   await renderData()
 }
 import axios from 'axios';
-// const savejson = { "esp_id": 10, "sensors": [{"type": "TEMP", "value": 15.000000}, {"type": "TEMP_UMID", "value": [26.000000, 50.000000]}, {"type": "PASSWORD", "value": "1234"}]}
+const savejson = { "esp_id": 10, "sensors": [{"type": "TEMP", "value": 10.2000000, "pin": 27}]}
 
-// function salvar(){
+function salvar(){
 
-// axios.post('http://localhost:3001/api/dados', savejson)
-//   .then(function (response) {
-//     console.log(response);
-//   })
-//   .catch(function (error) {
-//     console.log(error);
-//   });
-// }
+axios.post('http://localhost:3001/api/dados', savejson)
+  .then(function (response) {
+    console.log(response);
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+}
+
+// salvar();
 
 async function getData(busca:string){
   
