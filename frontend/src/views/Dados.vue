@@ -79,7 +79,15 @@ const tables = [{
     cols: ['ID', 'Pin', 'X (A)', 'Y (A)', 'Z (A)', 'X (G)', 'Y (G)', 'Z (G)', 'Temperatura', 'Data e hora'],
     props: ['id', 'pín', 'acel_x', 'acel_y', 'acel_z', 'giro_x', 'giro_y', 'giro_z', 'temperatura_mpu', 'dataHora']
 
-}]
+},
+{
+    nome: 'Teclado',
+    url: '/table/teclado',
+    cod: 'TECLADO',
+    cols: ['ID', 'Pin', 'Tecla', 'Data e hora'],
+    props: ['id', 'pín', 'tecla', 'dataHora']
+
+},]
 
 const currentPath = ref(window.location.hash)
 
@@ -98,6 +106,7 @@ async function getData(busca){
   
   try{
     const response = await axios.get('http://localhost:3001/api/' + busca)
+    console.log(response.data)
     return response.data
 
   } catch (error) {
