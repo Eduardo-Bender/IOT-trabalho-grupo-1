@@ -1,6 +1,6 @@
 <template>
   <div class="flex gap-4" >
-    <p class="text-2xl text-black">Sensor Ultrassônico</p>
+    <p class="text-2xl text-black" v-if="exibirNome">Sensor Ultrassônico</p>
     <Calendar :day="day" @input="changeDay" :uniqueId="uniqueID" :popover="uniqueID + 'popover'"></Calendar>
     <select v-if="!isLoading" class="select w-min" v-model="selectedPlaca" @change="changePlaca()">
       <option v-for="p in placas" :id="p">{{ p }}</option>
@@ -21,6 +21,7 @@ import { ref, inject, onMounted} from "vue";
 import LineChart from "@/components/LineChart.vue";
 import Calendar from "@/components/Calendar.vue";
 
+const exibirNome = window.location.hash.includes('ultrassonico') ? true : false
 const colors = inject('colors')
 const selectedPlaca = ref();
 const filteredData = ref() ;
@@ -53,6 +54,11 @@ async function renderData(){
           responsive: true,
           maintainAspectRatio: false,
           scales: {
+            x:{
+              ticks:{
+                display: window.location.hash.includes('ultrassonico') ? true : false
+              }
+            },
             y:{
               min: Math.min(...yValue.value) - 2,
               max: Math.max(...yValue.value) + 2
