@@ -71,6 +71,14 @@ const tables = [{
     cols: ['ID', 'Pin', 'Contagem', 'Data e hora'],
     props: ['id', 'pín', 'contagem', 'dataHora']
 
+},
+{
+    nome: 'Acelerômetro e Giroscópio',
+    url: '/table/acegiro',
+    cod: 'ACELEROMETRO_GIROSCOPIO',
+    cols: ['ID', 'Pin', 'X (A)', 'Y (A)', 'Z (A)', 'X (G)', 'Y (G)', 'Z (G)', 'Temperatura', 'Data e hora'],
+    props: ['id', 'pín', 'acel_x', 'acel_y', 'acel_z', 'giro_x', 'giro_y', 'giro_z', 'temperatura_mpu', 'dataHora']
+
 }]
 
 const currentPath = ref(window.location.hash)

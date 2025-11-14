@@ -21,6 +21,7 @@ import TemperatureLineView from './TemperatureLineView.vue'
 import UltrasonicInterpolationView from './UltrasonicInterpolationView.vue'
 import UmidadeTempMultiAxisView from './UmidadeTempMultiAxisView.vue'
 import EncoderBarView from './EncoderBarView.vue'
+import AcelGiroBubbleView from './AcelGiroBubbleView.vue'
 
 const graphs = [{
     nome: 'Temperatura',
@@ -41,6 +42,11 @@ const graphs = [{
     nome: 'Velocidade',
     url: '/encoder',
     view: EncoderBarView
+},
+{
+    nome: 'Acelerômetro e Giroscópio',
+    url: '/acegiro',
+    view: AcelGiroBubbleView
 }]
 
 const currentPath = ref(window.location.hash)
