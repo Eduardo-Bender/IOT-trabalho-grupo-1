@@ -15,9 +15,11 @@ const routes = {
   '/temperatura': Grafico,
   '/ultrassonico': Grafico,
   '/umidtemp': Grafico,
+  '/encoder': Grafico,
   '/table/temperatura': Dados,
   '/table/ultrassonico': Dados,
-  '/table/umidtemp': Dados
+  '/table/umidtemp': Dados,
+  '/table/encoder': Dados
 }
 app.provide('routes', routes)
 

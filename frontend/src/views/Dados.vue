@@ -63,6 +63,14 @@ const tables = [{
     cols: ['ID', 'Pin', 'Temperatura', 'Umidade', 'Data e hora'],
     props: ['id', 'pín', 'temperatura','umidade', 'dataHora']
 
+},
+{
+    nome: 'Velocidade',
+    url: '/table/encoder',
+    cod: 'VELOCIDADE_ENCODER',
+    cols: ['ID', 'Pin', 'Contagem', 'Data e hora'],
+    props: ['id', 'pín', 'contagem', 'dataHora']
+
 }]
 
 const currentPath = ref(window.location.hash)
