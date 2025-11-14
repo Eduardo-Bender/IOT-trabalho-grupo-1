@@ -13,7 +13,8 @@ const char* PASSWORD = "senhanova";
   
 const char* BROKER_MQTT = "broker.hivemq.com"; 
 int BROKER_PORT = 1883;
- 
+static String mensagem_mqtt; 
+
 WiFiClient espClient;
 PubSubClient MQTT(espClient);
 
@@ -25,12 +26,19 @@ void reconnect_wifi(void);
 void reconnect_mqtt(void);
 void mqtt_callback(char* topic, byte* payload, unsigned int length);
 void verifica_conexoes_wifi_mqtt(void);
-void mqttLoop(void);
+void mqttLoop(char*);
+String getMensagemMqtt(void);
 
-void mqttLoop()
+String getMensagemMqtt(void)
+{
+    return mensagem_mqtt;
+}
+
+
+void mqttLoop(char* msg = nullptr)
 {
   verifica_conexoes_wifi_mqtt();
-  MQTT.publish(TOPICO_PUBLISH, "ESP32 se comunicando com MQTT");
+  MQTT.publish(TOPICO_PUBLISH, msg);
   MQTT.loop();
 }
 
@@ -73,9 +81,10 @@ void init_mqtt(void)
     tópico subescrito chega) */
     MQTT.setCallback(mqtt_callback);            
 }
-  
+
 void mqtt_callback(char* topic, byte* payload, unsigned int length) 
 {
+    mensagem_mqtt = "";
     String msg;
  
     //obtem a string do payload recebido
@@ -84,8 +93,7 @@ void mqtt_callback(char* topic, byte* payload, unsigned int length)
        char c = (char)payload[i];
        msg += c;
     }
-    Serial.print("[MQTT] Mensagem recebida: ");
-    Serial.println(msg);     
+    mensagem_mqtt = msg;
 }
   
 void reconnect_mqtt(void) 
