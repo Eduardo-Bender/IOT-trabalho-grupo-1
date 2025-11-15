@@ -6,6 +6,10 @@
       <option v-for="p in placas" :id="p">{{ p }}</option>
     </select>
   </div>
+    <label class="label">
+      <input type="checkbox" class="toggle" v-model="isRealTime" @change="realTime"/>
+      Tempo real
+  </label>
   <div class="h-full" v-if="!isLoading">
     <div class="h-full ">
 
@@ -21,6 +25,8 @@ import { ref, inject, onMounted} from "vue";
 import LineChart from "@/components/LineChart.vue";
 import Calendar from "@/components/Calendar.vue";
 
+const isRealTime = ref(false)
+let interval
 const exibirNome = window.location.hash.includes('ultrassonico') ? true : false
 const colors = inject('colors')
 const selectedPlaca = ref();
@@ -37,20 +43,24 @@ const chartData = ref();
 const chartOptions  = ref({})
 const isLoading = ref(true)
 
-async function renderData(){
-  isLoading.value = true
-  
-  filteredData.value  = await getData('sensores/ULTRASSONICO/' + selectedPlaca.value)
+function realTime(){
+  if(isRealTime.value){
+    interval = setInterval(async () => {
+    filteredData.value  = await getData('sensores/ULTRASSONICO/' + selectedPlaca.value)
+    yValue.value = filteredData.value.map(obj => obj.temperatura)
+    
+    datasets.value = setDatasets()
+    chartData.value = setData()
 
-  pins.value = Array.from(new Set(filteredData.value.map(obj => obj.pin)))
+    }, 1000);
+  }
+  else{
+    clearInterval(interval)
+  }
+}
 
-  yValue.value = filteredData.value.map(obj => obj.temperatura)
-
-  datasets.value = setDatasets()
-  chartData.value = setData()
-
-  isLoading.value = false
-   chartOptions.value = {
+function setChartOptions(){
+chartOptions.value = {
           responsive: true,
           maintainAspectRatio: false,
           scales: {
@@ -79,6 +89,23 @@ async function renderData(){
                 }
               }
           }
+}
+
+async function renderData(){
+  isLoading.value = true
+  
+  filteredData.value  = await getData('sensores/ULTRASSONICO/' + selectedPlaca.value)
+  filteredData.value = filteredData.value.filter(obj => obj.dataHora.slice(0,10) == day.value)
+
+  pins.value = Array.from(new Set(filteredData.value.map(obj => obj.pin)))
+
+  yValue.value = filteredData.value.map(obj => obj.temperatura)
+
+  datasets.value = setDatasets()
+  chartData.value = setData()
+
+  isLoading.value = false
+   setChartOptions()
 }
 
 
@@ -151,20 +178,7 @@ async function changePlaca(){
   await renderData()
 }
 import axios from 'axios';
-const savejson = { "esp_id": 10, "sensors": [{"type": "TEMP", "value": 10.2000000, "pin": 27}]}
 
-function salvar(){
-
-axios.post('http://localhost:3001/api/dados', savejson)
-  .then(function (response) {
-    console.log(response);
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
-}
-
-// salvar();
 
 async function getData(busca:string){
   

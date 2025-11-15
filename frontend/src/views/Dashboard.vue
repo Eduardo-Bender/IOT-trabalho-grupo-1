@@ -74,6 +74,8 @@ import TemperatureLineView from './TemperatureLineView.vue';
 import UltrasonicInterpolationView from './UltrasonicInterpolationView.vue';
 import UmidadeTempMultiAxisView from './UmidadeTempMultiAxisView.vue';
 import EncoderBarView from './EncoderBarView.vue';
+import AcelerometroBubbleView from './AcelerometroBubbleView.vue';
+import GiroscopioBubbleView from './GiroscopioBubbleView.vue';
 
 const sensores = [{
   nome: 'Temperatura',
@@ -94,14 +96,22 @@ const sensores = [{
     nome: 'Velocidade',
     grafico: EncoderBarView,
     id: 4
+},
+{
+    nome: 'Acelerômetro',
+    grafico: AcelerometroBubbleView,
+    id:5
+},
+{
+    nome: 'Giroscópio',
+    grafico: GiroscopioBubbleView,
+    id: 6
 }]
-
-const ids = sensores.map(obj => obj.id)
 
 const g1 = ref(1);
 const g2 = ref(2);
 const g3 = ref(4);
-const g4 = ref(4);
+const g4 = ref(5);
 const g5 = ref(3);
-const g6 = ref(2);
+const g6 = ref(6);
 </script>

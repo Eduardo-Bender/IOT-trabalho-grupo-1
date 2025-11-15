@@ -6,6 +6,10 @@
       <option v-for="p in placas" :id="p">{{ p }}</option>
     </select>
   </div>
+    <label class="label">
+      <input type="checkbox" class="toggle" v-model="isRealTime" @change="realTime"/>
+      Tempo real
+  </label>
   <div class="h-full" v-if="!isLoading">
     <div class="h-full ">
 
@@ -21,6 +25,8 @@ import { ref, inject, onMounted} from "vue";
 import BarChart from "@/components/BarChart.vue";
 import Calendar from "@/components/Calendar.vue";
 
+let interval
+const isRealTime = ref(false)
 const exibirNome = window.location.hash.includes('encoder') ? true : false
 const colors = inject('colors')
 const selectedPlaca = ref();
@@ -38,23 +44,26 @@ const chartData = ref();
 const chartOptions  = ref({})
 const isLoading = ref(true)
 
-async function renderData(){
-  isLoading.value = true
-  
-  filteredData.value  = await getData('sensores/VELOCIDADE_ENCODER/' + selectedPlaca.value)
 
-  pins.value = Array.from(new Set(filteredData.value.map(obj => obj.pin)))
+function realTime(){
+  if(isRealTime.value){
+    interval = setInterval(async () => {
+    filteredData.value  = await getData('sensores/VELOCIDADE_ENCODER/' + selectedPlaca.value)
+    yValue.value = filteredData.value.map(obj => obj.contagem)
+    
+    datasets.value = setDatasets()
+    chartData.value = setData()
+    setChartOptions()
 
-  yValue.value = filteredData.value.map(obj => obj.contagem)
+    }, 1000);
+  }
+  else{
+    clearInterval(interval)
+  }
+}
 
-  labels.value = Array.from(new Set(filteredData.value.map(obj => obj.dataHora.slice(11,19)))) //array de horários
-
-  datasets.value = setDatasets()
-  chartData.value = setData()
-    console.log(chartData.value);
-
-  isLoading.value = false
-    chartOptions.value = {
+function setChartOptions(){
+  chartOptions.value = {
           responsive: true,
           maintainAspectRatio: false,
           scales: {
@@ -85,6 +94,26 @@ async function renderData(){
           }
 }
 
+async function renderData(){
+  isLoading.value = true
+  
+  filteredData.value  = await getData('sensores/VELOCIDADE_ENCODER/' + selectedPlaca.value)
+  filteredData.value = filteredData.value.filter(obj => obj.dataHora.slice(0,10) == day.value)
+
+  pins.value = Array.from(new Set(filteredData.value.map(obj => obj.pin)))
+
+  yValue.value = filteredData.value.map(obj => obj.contagem)
+
+  labels.value = Array.from(new Set(filteredData.value.map(obj => obj.dataHora.slice(11,19)))) //array de horários
+
+  datasets.value = setDatasets()
+  chartData.value = setData()
+    console.log(chartData.value);
+
+  isLoading.value = false
+  setChartOptions()
+}
+
 
  // função que cria o array de objetos, aplicando os filtros
 function setArrays(){
@@ -93,7 +122,7 @@ function setArrays(){
   for( const i of pins.value){
     array.push((filteredData.value.filter(obj => obj.pin === i)).filter(obj => obj.dataHora.slice(0,10) == day.value))
   }
-  console.log(filteredData.value)
+
   return array
 
 }
@@ -107,6 +136,7 @@ function setDatasets(){
     if(array[0].length > 0){
         // um dataset por pin do sensor
         for(const a of array){
+          console.log(array, a)
           ret.push(
             {
               label: a[0].pin,
@@ -154,20 +184,7 @@ async function changePlaca(){
   await renderData()
 }
 import axios from 'axios';
-const savejson = { "esp_id": 10, "sensors": [{"type": "VELOCIDADE_ENCODER", "value": 9, "pin": 27}]}
 
-function salvar(){
-
-axios.post('http://localhost:3001/api/dados', savejson)
-  .then(function (response) {
-    console.log(response);
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
-}
-
-// salvar();
 
 async function getData(busca:string){
   

@@ -6,6 +6,10 @@
       <option v-for="p in placas" :id="p">{{ p }}</option>
     </select>
   </div>
+  <label class="label">
+      <input type="checkbox" class="toggle" v-model="isRealTime" @change="realTime"/>
+      Tempo real
+  </label>
   <div class="h-full" v-if="!isLoading">
     <div class="h-full ">
 
@@ -21,6 +25,8 @@ import { ref, inject, onMounted} from "vue";
 import LineChart from "@/components/LineChart.vue";
 import Calendar from "@/components/Calendar.vue";
 
+const isRealTime = ref(false)
+let interval
 const exibirNome = window.location.hash.includes('temperatura') ? true : false
 const colors = inject('colors')
 const selectedPlaca = ref();
@@ -31,30 +37,30 @@ const pins = ref()
 const date = new Date();
 const currentDate = date.getFullYear() + "-" + (date.getMonth() +1) + "-" + ("0" + date.getDate()).slice(-2);
 const day = ref(currentDate) //data selecionada no calendário
-const labels = ref() //array de horários
 const yValue = ref()
 const datasets = ref()
 const chartData = ref();
 const chartOptions  = ref({})
 const isLoading = ref(true)
 
-async function renderData(){
-  isLoading.value = true
-  
-  filteredData.value  = await getData('sensores/TEMP/' + selectedPlaca.value)
+function realTime(){
+  if(isRealTime.value){
+    interval = setInterval(async () => {
+    filteredData.value  = await getData('sensores/TEMP/' + selectedPlaca.value)
+    yValue.value = filteredData.value.map(obj => obj.temperatura)
+    setChartOptions()
+    datasets.value = setDatasets()
+    chartData.value = setData()
 
-  pins.value = Array.from(new Set(filteredData.value.map(obj => obj.pin)))
+    }, 1000);
+  }
+  else{
+    clearInterval(interval)
+  }
+}
 
-  yValue.value = filteredData.value.map(obj => obj.temperatura)
-
-  labels.value = Array.from(new Set(filteredData.value.map(obj => obj.dataHora.slice(11,19)))) //array de horários
-
-  datasets.value = setDatasets()
-  chartData.value = setData()
-    console.log(chartData.value);
-
-  isLoading.value = false
-    chartOptions.value = {
+function setChartOptions(){
+  chartOptions.value = {
           responsive: true,
           maintainAspectRatio: false,
           scales: {
@@ -85,6 +91,23 @@ async function renderData(){
           }
 }
 
+async function renderData(){
+  isLoading.value = true
+  
+  filteredData.value  = await getData('sensores/TEMP/' + selectedPlaca.value)
+  filteredData.value = filteredData.value.filter(obj => obj.dataHora.slice(0,10) == day.value)
+
+  pins.value = Array.from(new Set(filteredData.value.map(obj => obj.pin)))
+
+  yValue.value = filteredData.value.map(obj => obj.temperatura)
+
+  datasets.value = setDatasets()
+  chartData.value = setData()
+
+  isLoading.value = false
+  setChartOptions()
+}
+
 
  // função que cria o array de objetos, aplicando os filtros
 function setArrays(){
@@ -107,6 +130,7 @@ function setDatasets(){
     if(array[0].length > 0){
         // um dataset por pin do sensor
         for(const a of array){
+
           ret.push(
             {
               label: a[0].pin,
@@ -154,18 +178,6 @@ async function changePlaca(){
   await renderData()
 }
 import axios from 'axios';
-// const savejson = { "esp_id": 10, "sensors": [{"type": "TEMP", "value": 15.000000}, {"type": "TEMP_UMID", "value": [26.000000, 50.000000]}, {"type": "PASSWORD", "value": "1234"}]}
-
-// function salvar(){
-
-// axios.post('http://localhost:3001/api/dados', savejson)
-//   .then(function (response) {
-//     console.log(response);
-//   })
-//   .catch(function (error) {
-//     console.log(error);
-//   });
-// }
 
 async function getData(busca:string){
   
@@ -191,18 +203,5 @@ onMounted(async () => {
 
 
 })
-// const savejson = { "esp_id": 111, "sensors": [{"type": "ACELEROMETRO_GIROSCOPIO", "value": {"acel_x":10, "acel_y":29, "acel_z":12, "giro_x":23, "giro_y":54, "giro_z":20, "temperatura_mpu":29.3}, "pin":6}]}
 
-// function salvar(){
-
-// axios.post('http://localhost:3001/api/dados', savejson)
-//   .then(function (response) {
-//     console.log(response);
-//   })
-//   .catch(function (error) {
-//     console.log(error);
-//   });
-// }
-
-// salvar()
 </script>

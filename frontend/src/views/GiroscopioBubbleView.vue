@@ -17,10 +17,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, inject, onMounted} from "vue";
+import { ref, inject, onMounted, onUnmounted} from "vue";
 import BubbleChart from "@/components/BubbleChart.vue";
 import Calendar from "@/components/Calendar.vue";
 
+let interval
 const colors = inject('colors')
 const selectedPlaca = ref();
 const filteredData = ref() ;
@@ -39,6 +40,7 @@ async function renderData(){
   isLoading.value = true
   
   filteredData.value  = await getData('sensores/ACELEROMETRO_GIROSCOPIO/' + selectedPlaca.value)
+  filteredData.value = filteredData.value.filter(obj => obj.dataHora.slice(0,10) == day.value)
 
   pins.value = Array.from(new Set(filteredData.value.map(obj => obj.pin)))
 
@@ -144,20 +146,6 @@ async function changePlaca(){
   await renderData()
 }
 import axios from 'axios';
-const savejson = { "esp_id": 111, "sensors": [{"type": "ACELEROMETRO_GIROSCOPIO", "value": {"acel_x":20.500000, "acel_y":31.000000, "acel_z":19, "giro_x":23, "giro_y":54, "giro_z":20, "temperatura_mpu":29.3}, "pin":6}]}
-
-function salvar(){
-
-axios.post('http://localhost:3001/api/dados', savejson)
-  .then(function (response) {
-    console.log(response);
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
-}
-
-// salvar()
 
 async function getData(busca:string){
   
@@ -171,21 +159,26 @@ async function getData(busca:string){
 
 }
 
+
 onMounted(async () => {
 
   placas.value = await getData('placas')
   placas.value = placas.value.map(obj => obj.id)
   selectedPlaca.value = placas.value[0]
   await renderData()
-  if(window.location.hash.includes('acegiro')){
-    setInterval(async () => {
+  
+    interval = await setInterval(async () => {
     filteredData.value  = await getData('sensores/ACELEROMETRO_GIROSCOPIO/' + selectedPlaca.value)
     datasets.value = setDatasets()
     chartData.value = setData()
 
     }, 1000)
-  }
+  
 
   
 })
+
+onUnmounted(()=> {
+  console.log(interval)
+  clearInterval(interval)})
 </script>
