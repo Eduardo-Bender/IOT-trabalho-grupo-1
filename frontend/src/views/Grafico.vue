@@ -21,7 +21,7 @@ import TemperatureLineView from './TemperatureLineView.vue'
 import UltrasonicInterpolationView from './UltrasonicInterpolationView.vue'
 import UmidadeTempMultiAxisView from './UmidadeTempMultiAxisView.vue'
 import EncoderBarView from './EncoderBarView.vue'
-import AcelGiroBubbleView from './AcelGiroBubbleView.vue'
+import AceGiroView from './AceGiroView.vue'
 import KeypadScatterView from './KeypadScatterView.vue'
 
 const graphs = [{
@@ -47,7 +47,7 @@ const graphs = [{
 {
     nome: 'Acelerômetro e Giroscópio',
     url: '/acegiro',
-    view: AcelGiroBubbleView
+    view: AceGiroView
 },
 {
     nome: 'Teclado',

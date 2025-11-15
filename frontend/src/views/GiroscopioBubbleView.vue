@@ -1,6 +1,6 @@
 <template>
   <div class="flex gap-4" >
-    <p class="text-2xl text-black" v-if="exibirNome">Acelerômetro e Giroscópio</p>
+
     <Calendar :day="day" @input="changeDay" :uniqueId="uniqueID" :popover="uniqueID + 'popover'"></Calendar>
     <select v-if="!isLoading" class="select w-min" v-model="selectedPlaca" @change="changePlaca()">
       <option v-for="p in placas" :id="p">{{ p }}</option>
@@ -21,7 +21,6 @@ import { ref, inject, onMounted} from "vue";
 import BubbleChart from "@/components/BubbleChart.vue";
 import Calendar from "@/components/Calendar.vue";
 
-const exibirNome = window.location.hash.includes('acegiro') ? true : false
 const colors = inject('colors')
 const selectedPlaca = ref();
 const filteredData = ref() ;
@@ -31,8 +30,6 @@ const pins = ref()
 const date = new Date();
 const currentDate = date.getFullYear() + "-" + (date.getMonth() +1) + "-" + ("0" + date.getDate()).slice(-2);
 const day = ref(currentDate) //data selecionada no calendário
-const yValue = ref()
-const y1Value = ref()
 const datasets = ref()
 const chartData = ref();
 const chartOptions  = ref({})
@@ -45,8 +42,6 @@ async function renderData(){
 
   pins.value = Array.from(new Set(filteredData.value.map(obj => obj.pin)))
 
-  yValue.value = filteredData.value.map(obj => (obj.acel_y, obj.giro_y))
-  y1Value.value = filteredData.value.map(obj => obj.temperatura)
 
   datasets.value = setDatasets()
   chartData.value = setData()
@@ -57,57 +52,27 @@ async function renderData(){
           responsive: true,
           maintainAspectRatio: false,
           scales: {
-            x1:{
+            x:{
+
               ticks:{
                 display: window.location.hash.includes('acegiro') ? true : false
               },
-            //   position: 'bottom'
-            },
-            x2:{
-                type:'category',
-                ticks:{
-                display:  false
-              },
-              position:'top',
-                            grid:{
-                drawOnChartArea: false
-              }
-            },
-            
-            y:{
-              min: 0,
-              max: 70,
-              display: true,
-              position:'left',
-            //   type: 'linear'
-            },
-            // umidadeAxis:{
-            //   max: 60,
-            //   position:'right',
-            //   type: 'linear',
-            //   display: true,
-            //   grid:{
-            //     drawOnChartArea: false
-            //   }
-            // }
+            }
+
           },
-        //   plugins: {
-        //         datalabels: {
-        //           anchor: 'end', // Position the label at the end of the bar
-        //           align: 'end',  // Align the label to the end of the bar
-        //           formatter: (value, context) => {
-        //             // Customize the label text here
-        //             console.log(context)
-        //             if(context.dataset.label.includes('Acelerômetro'))
-        //                 return value.acel_; // Displays the raw data value
-        //             return value.umidade
-        //           },
-        //           color: 'black', // Set label color
-        //           font: {
-        //             weight: 'bold' // Set font weight
-        //           }
-        //         }
-        //       }
+          plugins: {
+                datalabels: {
+                  anchor: 'end', // Position the label at the end of the bar
+                  align: 'end',  // Align the label to the end of the bar
+                  formatter: (value, context) => {
+                    return value.r
+                  },
+                  color: 'black', // Set label color
+                  font: {
+                    weight: 'bold' // Set font weight
+                  }
+                }
+              }
           }
 
 }
@@ -117,8 +82,8 @@ function setArrays(){
   let array = []
 
   for( const i of pins.value){
-    array.push((filteredData.value.filter(obj => obj.pin === i)).filter(obj => obj.dataHora.slice(0,10) == day.value))
-
+    let list = (filteredData.value.filter(obj => obj.pin === i)).filter(obj => obj.dataHora.slice(0,10) == day.value)
+    list.length > 0 ? array.push(list[0]) : {}
     }
   return array
 
@@ -127,54 +92,26 @@ function setArrays(){
 // função que configura os datasets
 function setDatasets(){
   let array = setArrays();
-  console.log(array)
   let ret = [];
   let i = 4;
   if(array.length > 0){
-    if(array[0].length > 0){
+    // if(array[0].length > 0){
         // um dataset por pin do sensor
         for(const a of array){
           ret.push(
             {
               type: 'bubble',
-              label: a[0].pin + " - Acelerômetro",
+              label: a.pin,
               backgroundColor: colors[i],
               borderColor: colors[i],
-              data: a.map(item => ({
-                x: item.acel_x,
-                y:item.acel_y,
-                r: item.acel_z
-              })),
-              xAxisID: 'x1',
-
-            //   yAxisID: 'temperaturaAxis'
+              data:[{
+                x: a.giro_x,
+                y: a.giro_y,
+                r: a.giro_z
+              }],
+              xAxisID: 'x'
             },
-            {
-                type: 'bubble',
-              label: a[0].pin + " - Giroscópio",
-              backgroundColor: colors[i] + '88',
-              borderColor: colors[i],
-              data: a.map(item => ({
-                x: item.giro_x,
-                y:item.giro_y,
-                r: item.giro_z
-              })),
-              xAxisID: 'x1',
-
-            //   yAxisID: 'umidadeAxis'
-            },
-            {
-              label: a[0].pin + " - Temperatura",
-              backgroundColor: colors[i] + '88',
-              borderColor: colors[i],
-              borderDash: [5, 5],
-              data: a.map(item =>({
-                x: item.dataHora,
-                y: item.temperatura_mpu
-              })),
-              xAxisID: 'x2',
-              type:'line'
-            }
+            
           )
           if(i == colors.length){
             i = 0;
@@ -183,21 +120,18 @@ function setDatasets(){
             i++;
           }
         }
-      }
-      else{
-        ret.push({})
-      }
+
   }
   else{
     ret.push({})
   }
- 
-
   return ret
 }
 
 function setData(){
-  return {           datasets: datasets.value
+
+  return {         
+          datasets: datasets.value
         }
 }
 
@@ -237,13 +171,21 @@ async function getData(busca:string){
 
 }
 
-
 onMounted(async () => {
 
   placas.value = await getData('placas')
   placas.value = placas.value.map(obj => obj.id)
   selectedPlaca.value = placas.value[0]
   await renderData()
+  if(window.location.hash.includes('acegiro')){
+    setInterval(async () => {
+    filteredData.value  = await getData('sensores/ACELEROMETRO_GIROSCOPIO/' + selectedPlaca.value)
+    datasets.value = setDatasets()
+    chartData.value = setData()
+
+    }, 1000)
+  }
+
   
 })
 </script>

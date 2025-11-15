@@ -9,8 +9,8 @@ import {
   Legend,
   PointElement,
   LinearScale,
-  LineElement,
-    CategoryScale,
+  // LineElement,
+    // CategoryScale,
 
 } from 'chart.js'
 import { Bubble } from 'vue-chartjs'
@@ -22,9 +22,9 @@ ChartJS.register(
   Legend,
   PointElement,
   LinearScale,
-  LineElement,
-  // ChartDataLabels,
-  CategoryScale,
+  // LineElement,
+  ChartDataLabels,
+  // CategoryScale,
 )
 
 const props = defineProps({

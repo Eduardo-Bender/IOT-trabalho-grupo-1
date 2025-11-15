@@ -1,13 +1,13 @@
 <template>
     <div class="grid grid-cols-5 grid-rows-[25px_600px] gap-4 h-screen">
-        <div class="col-start-2 row-span-2">
+        <div class="col-start-1 row-span-2">
             <p class="text-2xl pl-4 pt-10">Sensores</p>
             <ul class="menu bg-base-200 rounded-box w-full">
                 <li v-for="g in tables"><a :href="'#' + g.url">{{g.nome}}</a></li>
             </ul>
         </div>
 
-        <div class="col-span-3 col-start-3 row-start-2 p-3">
+        <div class="col-span-3 col-start-2 row-start-2 p-3">
             <div class="flex gap-4" >
                 <p class="text-2xl text-black">Sensor {{currentView.nome}}</p>
                 <Calendar :day="day" @input="changeDay"></Calendar>
