@@ -2,19 +2,20 @@
 
 #include "../lib/pin_to_write.h"
 
+PinToWrite pin_to_write;
+
 void setup()
 {
-  pinMode(13, OUTPUT);
-  digitalWrite(13, LOW);
+  pin_to_write.add_pin(13);
 }
 
 void loop()
 {
-  process_pins_to_write("13,1");
+  pin_to_write.process("13,1");
 
   delay(3000);
 
-  process_pins_to_write("13,0");
+  pin_to_write.process("13,0");
   //digitalWrite(13, 0);
 
   delay(3000);
