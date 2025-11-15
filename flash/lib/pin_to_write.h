@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 struct PinToWrite
 {
@@ -18,6 +19,19 @@ private:
         cur += c - '0';
 
         return cur;
+    }
+
+    bool check_if_pin_was_added(int pin)
+    {
+        for (int i = 0; i < pin_count; i++)
+        {
+            if (pin == pins[i])
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 public:
@@ -67,8 +81,23 @@ public:
 
         for (int i = 0; i + 1 < values_count; i += 2)
         {
-            digitalWrite(values[i], values[i + 1]);
-            //printf("%d %d\n", values[i], values[i + 1]);
+            int pin = values[i];
+            int value = values[i + 1];
+            int time = values[i + 2];
+
+            if (!check_if_pin_was_added(pin))
+            {
+                continue;
+            }
+
+            if (time == 0)
+            {
+                digitalWrite(pin, value);
+            }
+            else /// TEM DURACAO
+            {
+
+            }
         }
     }
 };

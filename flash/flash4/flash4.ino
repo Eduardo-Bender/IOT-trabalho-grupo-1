@@ -11,11 +11,11 @@ void setup()
 
 void loop()
 {
-  pin_to_write.process("13,1");
+  pin_to_write.process("13, 1, 0");
 
   delay(3000);
 
-  pin_to_write.process("13,0");
+  pin_to_write.process("13, 0, 0");
   //digitalWrite(13, 0);
 
   delay(3000);
