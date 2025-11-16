@@ -7,7 +7,7 @@ const sensores = [{
   tabela: '#/table/temperatura'
 },
 {
-  nome: 'Sensor Ultrasônico',
+  nome: 'Sensor Ultrassônico',
   grafico: '#/ultrassonico',
   tabela: '#/table/ultrassonico'
 },
@@ -70,7 +70,8 @@ const currentView = computed(() => {
           </li>
         </ul>
       </div>
-      <a class="btn btn-ghost text-xl" href="#/">NomeSistema</a>
+      <a class="btn btn-ghost text-xl" href="#/">Dashboard
+      </a>
     </div>
     <div class="navbar-center hidden lg:flex">
       <ul class="menu menu-horizontal px-8">
