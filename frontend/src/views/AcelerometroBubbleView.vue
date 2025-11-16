@@ -16,10 +16,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, inject, onMounted} from "vue";
+import { ref, inject, onMounted, onUnmounted, onDeactivated} from "vue";
 import BubbleChart from "@/components/BubbleChart.vue";
 import Calendar from "@/components/Calendar.vue";
 
+let interval
 const colors = inject('colors')
 const selectedPlaca = ref();
 const filteredData = ref() ;
@@ -38,6 +39,7 @@ async function renderData(){
   isLoading.value = true
   
   filteredData.value  = await getData('sensores/ACELEROMETRO_GIROSCOPIO/' + selectedPlaca.value)
+  filteredData.value = filteredData.value.filter(obj => obj.dataHora.slice(0,10) == day.value)
 
   pins.value = Array.from(new Set(filteredData.value.map(obj => obj.pin)))
 
@@ -176,15 +178,19 @@ onMounted(async () => {
   placas.value = placas.value.map(obj => obj.id)
   selectedPlaca.value = placas.value[0]
   await renderData()
-  if(window.location.hash.includes('acegiro')){
-    setInterval(async () => {
+
+    interval = await setInterval(async () => {
     filteredData.value  = await getData('sensores/ACELEROMETRO_GIROSCOPIO/' + selectedPlaca.value)
     datasets.value = setDatasets()
     chartData.value = setData()
 
     }, 1000)
-  }
+
 
   
 })
+
+onUnmounted(()=> {
+  console.log(interval)
+  clearInterval(interval)})
 </script>

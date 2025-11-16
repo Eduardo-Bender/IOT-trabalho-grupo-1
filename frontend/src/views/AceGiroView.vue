@@ -5,7 +5,7 @@ import GiroscopioBubbleView from './GiroscopioBubbleView.vue';
 </script>
 
 <template>
-  <div >
+  <div class="h-100">
     <p class="text-2xl text-black">Acelerômetro e Giroscópio</p>
     <AcelerometroBubbleView/>
     <GiroscopioBubbleView/>

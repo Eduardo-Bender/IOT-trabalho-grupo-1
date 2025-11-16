@@ -139,4 +139,39 @@ onMounted(async () => {
 
 })
 
+// function getRandomInt() {
+//   return Math.floor(Math.random() * (50 - 5 + 1)) + 5
+// }
+// function salvar(){
+//     let temp = getRandomInt()
+//     let temp1 = getRandomInt()
+//     let umidade = getRandomInt()
+//     let acel_x = getRandomInt()
+//     let acel_y = getRandomInt()
+//     let acel_z = getRandomInt()
+//     let giro_x = getRandomInt()
+//     let giro_y = getRandomInt()
+//     let giro_z = getRandomInt()
+//     let temp_mpu = getRandomInt()
+//     let velocidade = getRandomInt()
+//     let distancia = getRandomInt()
+
+//     const savejson = { "esp_id": "AA:BB:CC:DD:EE:GG", "sensors": [
+//         {"type": "TEMP", "value": temp, "pin": 27},
+//         {"type": "UMIDADE_TEMPERATURA", "value": {"temperatura": temp1, "umidade":umidade}, "pin": 20},
+//         {"type": "ULTRASSONICO", "value": distancia, "pin": 10},
+//         {"type": "VELOCIDADE_ENCODER", "value": velocidade, "pin": 4},
+//         {"type": "ACELEROMETRO_GIROSCOPIO", "value":{"acel_x": acel_x, "acel_y": acel_y, "acel_z": acel_z, "giro_x": giro_x, "giro_y": giro_y, "giro_z": giro_z, "temperatura_mpu": temp_mpu}, "pin":19}
+//     ]}
+
+//     axios.post('http://localhost:3001/api/dados', savejson)
+//   .then(function (response) {
+//     console.log(response);
+//   })
+//   .catch(function (error) {
+//     console.log(error);
+//   });
+
+// }
+// salvar()
 </script>
