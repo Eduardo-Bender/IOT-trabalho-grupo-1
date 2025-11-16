@@ -12,7 +12,7 @@ struct PinToWrite
 {
 private:
 
-    static char const max_pin = 3;
+    static char const max_pin = 5;
     char pin_count = 0;
 
     Pin pins[max_pin];
