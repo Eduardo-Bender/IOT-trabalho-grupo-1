@@ -13,6 +13,7 @@
 
 #define dht11pin 15
 #define ARDUINO_ID 3
+#define SEND_WAIT_TIME_MS 1000
 
 //#define LED_AMARELO 2
 
@@ -21,10 +22,11 @@
 DHT11 dht11(dht11pin);
 Json json(ARDUINO_ID);
 
-float temperatura;
-float umidade;
-
 void dht11Loop(void);
+
+bool has_appended_data;
+unsigned long cur_time;
+unsigned long last_sent_time;
 
 void setup()
 {
@@ -33,14 +35,29 @@ void setup()
   dht11.setDelay(50);
   //pinMode(LED_AMARELO, OUTPUT);
   //digitalWrite(LED_AMARELO, LOW);
+
+  last_sent_time = 0;
 }
 
 void loop()
 {
-  json.reset();
-  dht11Loop();
+  has_appended_data = false;
+
+  cur_time = millis();
+
+  if (cur_time >= last_sent_time + SEND_WAIT_TIME_MS)
+  {
+    json.reset();
+    dht11Loop();
+
+    last_sent_time = cur_time;
+  }
   
-  mqttLoop(json.get_json());
+  if (has_appended_data)
+  {
+    mqttLoop(json.get_json());
+  }
+  
 
   /*if (temperatura > MAX_TEMP) {
   digitalWrite(LED_AMARELO, HIGH); // Acende o LED
@@ -49,19 +66,21 @@ void loop()
   }*/
 
 
-  delay(1000); // 1 Segundo
+  //delay(1000); // 1 Segundo
 }
 
 void dht11Loop()
 {
-  temperatura = dht11.readTemperature();
-  umidade = dht11.readHumidity();
+  float temperatura = dht11.readTemperature();
+  float umidade = dht11.readHumidity();
+
   if(temperatura == DHT11::ERROR_TIMEOUT || umidade == DHT11::ERROR_TIMEOUT)
   {
     return;
   }
 
   json.append_humidity_temperature_data(dht11pin, umidade, temperatura);
+  has_appended_data = true;
 
   Serial.print("Temperatura: ");
   Serial.println(temperatura);
