@@ -10,6 +10,12 @@
       <input type="checkbox" class="toggle" v-model="isRealTime" @change="realTime"/>
       Tempo real
   </label>
+  <div v-if="isAlerta" role="alert" class="alert alert-warning">
+  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+  </svg>
+  <span>Alerta: Temperatura acima do limite!</span>
+</div>
   <div class="h-full" v-if="!isLoading">
     <div class="h-full ">
 
@@ -25,6 +31,7 @@ import { ref, inject, onMounted} from "vue";
 import LineChart from "@/components/LineChart.vue";
 import Calendar from "@/components/Calendar.vue";
 
+const isAlerta = ref(false)
 let interval
 const isRealTime = ref(false)
 const exibirNome = window.location.hash.includes('umidtemp') ? true : false
@@ -94,7 +101,6 @@ chartOptions.value = {
                   align: 'end',  // Align the label to the end of the bar
                   formatter: (value, context) => {
                     // Customize the label text here
-                    console.log(context)
                     if(context.dataset.label.includes('Temperatura'))
                         return value.temperatura; // Displays the raw data value
                     return value.umidade
@@ -209,16 +215,28 @@ async function changePlaca(){
 }
 import axios from 'axios';
 
-
+const MAX_TEMP = inject('MAX_TEMP')
 async function getData(busca:string){
   
   try{
     const response = await axios.get('http://localhost:3001/api/' + busca)
+    console.log(response.data[0].temperatura)
+    if(response.data[0].temperatura > MAX_TEMP){
+      isAlerta.value = true
+      sendAlert()
+    }
+    else if(isAlerta){
+      isAlerta.value = false
+    }
     return response.data
 
   } catch (error) {
     console.error(error.message)
   }
+
+}
+
+function sendAlert(){
 
 }
 

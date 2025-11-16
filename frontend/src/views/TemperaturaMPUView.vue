@@ -1,19 +1,15 @@
 <template>
   <div class="flex gap-4" >
-    <p class="text-2xl text-black" v-if="exibirNome">Teclado</p>
+    <p class="text-2xl text-black" v-if="exibirNome">Sensor de Temperatura</p>
     <Calendar :day="day" @input="changeDay" :uniqueId="uniqueID" :popover="uniqueID + 'popover'"></Calendar>
     <select v-if="!isLoading" class="select w-min" v-model="selectedPlaca" @change="changePlaca()">
       <option v-for="p in placas" :id="p">{{ p }}</option>
     </select>
   </div>
-    <label class="label">
-      <input type="checkbox" class="toggle" v-model="isRealTime" @change="realTime"/>
-      Tempo real
-  </label>
   <div class="h-full" v-if="!isLoading">
     <div class="h-full ">
 
-      <ScatterChart  :chart-data="chartData" :chart-options="chartOptions"/>
+      <LineChart  :chart-data="chartData" :chart-options="chartOptions"/>
     </div>
   </div>
 
@@ -21,13 +17,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, inject, onMounted} from "vue";
-import ScatterChart from "@/components/ScatterChart.vue";
+import { ref, inject, onMounted, onUnmounted} from "vue";
+import LineChart from "@/components/LineChart.vue";
 import Calendar from "@/components/Calendar.vue";
 
 let interval
-const isRealTime = ref(false)
-const exibirNome = window.location.hash.includes('teclado') ? true : false
+const exibirNome = window.location.hash.includes('temperatura') ? true : false
 const colors = inject('colors')
 const selectedPlaca = ref();
 const filteredData = ref() ;
@@ -37,20 +32,18 @@ const pins = ref()
 const date = new Date();
 const currentDate = date.getFullYear() + "-" + (date.getMonth() +1) + "-" + ("0" + date.getDate()).slice(-2);
 const day = ref(currentDate) //data selecionada no calendário
-const labels = ref() //array de horários
 const yValue = ref()
 const datasets = ref()
 const chartData = ref();
 const chartOptions  = ref({})
 const isLoading = ref(true)
 
-
 function realTime(){
   if(isRealTime.value){
     interval = setInterval(async () => {
-    filteredData.value  = await getData('sensores/TECLADO/' + selectedPlaca.value)
-    yValue.value = filteredData.value.map(obj => obj.contagem)
-    
+    filteredData.value  = await getData('sensores/ACELEROMETRO_GIROSCOPIO/' + selectedPlaca.value)
+    yValue.value = filteredData.value.map(obj => obj.temperatura_mpu)
+    setChartOptions()
     datasets.value = setDatasets()
     chartData.value = setData()
 
@@ -62,18 +55,18 @@ function realTime(){
 }
 
 function setChartOptions(){
- chartOptions.value = {
+  chartOptions.value = {
           responsive: true,
           maintainAspectRatio: false,
           scales: {
             x:{
-                type: 'category',
               ticks:{
-                display: window.location.hash.includes('teclado') ? true : false
+                display: false
               }
             },
             y:{
-                type:'category'
+              min: Math.min(...yValue.value) - 0.5,
+              max: Math.max(...yValue.value) + 0.5
             }
           },
           plugins: {
@@ -82,7 +75,7 @@ function setChartOptions(){
                   align: 'end',  // Align the label to the end of the bar
                   formatter: (value, context) => {
                     // Customize the label text here
-                    return value.tecla; // Displays the raw data value
+                    return value.temperatura_mpu; // Displays the raw data value
                   },
                   color: 'black', // Set label color
                   font: {
@@ -92,24 +85,22 @@ function setChartOptions(){
               }
           }
 }
+
 async function renderData(){
   isLoading.value = true
   
-  filteredData.value  = await getData('sensores/TECLADO/' + selectedPlaca.value)
+  filteredData.value  = await getData('sensores/ACELEROMETRO_GIROSCOPIO/' + selectedPlaca.value)
   filteredData.value = filteredData.value.filter(obj => obj.dataHora.slice(0,10) == day.value)
 
   pins.value = Array.from(new Set(filteredData.value.map(obj => obj.pin)))
 
-  yValue.value = filteredData.value.map(obj => obj.tecla)
-
-  labels.value = Array.from(new Set(filteredData.value.map(obj => obj.dataHora.slice(11,19)))) //array de horários
+  yValue.value = filteredData.value.map(obj => obj.temperatura)
 
   datasets.value = setDatasets()
   chartData.value = setData()
-    console.log(chartData.value);
 
   isLoading.value = false
-   setChartOptions()
+  setChartOptions()
 }
 
 
@@ -129,17 +120,22 @@ function setArrays(){
 function setDatasets(){
   let array = setArrays();
   let ret = [];
-  let i = 0;
+  let i = 4;
   if(array.length > 0){
     if(array[0].length > 0){
         // um dataset por pin do sensor
         for(const a of array){
+
           ret.push(
             {
               label: a[0].pin,
               backgroundColor: colors[i],
               borderColor: colors[i],
-              data: a.map(item=>(item.tecla))
+              data: a,
+              parsing: {
+                xAxisKey: 'dataHora',
+                yAxisKey: 'temperatura_mpu'
+              }
             }
           )
           if(i == colors.length){
@@ -164,7 +160,6 @@ function setDatasets(){
 
 function setData(){
   return {
-    labels: labels.value,
           datasets: datasets.value
         }
 }
@@ -192,15 +187,25 @@ async function getData(busca:string){
 
 }
 
-
 onMounted(async () => {
 
   placas.value = await getData('placas')
   placas.value = placas.value.map(obj => obj.id)
   selectedPlaca.value = placas.value[0]
   await renderData()
+  
+    interval = await setInterval(async () => {
+    filteredData.value  = await getData('sensores/ACELEROMETRO_GIROSCOPIO/' + selectedPlaca.value)
+    datasets.value = setDatasets()
+    chartData.value = setData()
 
+    }, 1000)
+  
 
-
+  
 })
+
+onUnmounted(()=> {
+  console.log(interval)
+  clearInterval(interval)})
 </script>

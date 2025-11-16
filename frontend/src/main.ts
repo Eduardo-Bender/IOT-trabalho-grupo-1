@@ -10,6 +10,13 @@ import Dados from './views/Dados.vue'
 
 const app = createApp(App)
 
+const max_temperatura = 30
+const pin_led = 30
+
+app.provide('MAX_TEMP', max_temperatura)
+app.provide('PIN_LED', pin_led)
+
+
 const routes = {
   '/': Dashboard,
   '/temperatura': Grafico,
@@ -17,13 +24,15 @@ const routes = {
   '/umidtemp': Grafico,
   '/encoder': Grafico,
   '/acegiro': Grafico,
-  '/teclado': Grafico,
   '/table/temperatura': Dados,
   '/table/ultrassonico': Dados,
   '/table/umidtemp': Dados,
   '/table/encoder': Dados,
   '/table/acegiro': Dados,
-  '/table/teclado': Dados
+  '/table/teclado': Dados,
+  '/table/rele': Dados,
+  '/table/infravermelho': Dados,
+
 }
 app.provide('routes', routes)
 

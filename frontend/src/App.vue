@@ -7,7 +7,7 @@ const sensores = [{
   tabela: '#/table/temperatura'
 },
 {
-  nome: 'Sensor Ultrasônico',
+  nome: 'Sensor Ultrassônico',
   grafico: '#/ultrassonico',
   tabela: '#/table/ultrassonico'
 },
@@ -28,7 +28,7 @@ const sensores = [{
 },
 {
   nome: 'Teclado',
-  grafico: '#/teclado',
+  grafico: null,
   tabela: '#/table/teclado'
 }]
 
@@ -59,7 +59,7 @@ const currentView = computed(() => {
           <li>
             <a>Gráficos</a>
             <ul class="p-2">
-              <li v-for="g in sensores" class="z-4"><a :href="g.grafico">>{{g.nome}}</a></li>
+              <li v-for="g in sensores"  class="z-4"><a v-if="g.grafico" :href="g.grafico">>{{g.nome}}</a></li>
             </ul>
           </li>
           <li>
@@ -70,7 +70,8 @@ const currentView = computed(() => {
           </li>
         </ul>
       </div>
-      <a class="btn btn-ghost text-xl" href="#/">NomeSistema</a>
+      <a class="btn btn-ghost text-xl" href="#/">Dashboard
+      </a>
     </div>
     <div class="navbar-center hidden lg:flex">
       <ul class="menu menu-horizontal px-8">
@@ -78,7 +79,7 @@ const currentView = computed(() => {
           <details>
             <summary>Gráficos</summary>
             <ul class="p-0">
-              <li v-for="g in sensores" class="z-4"><a :href="g.grafico">>{{g.nome}}</a></li>
+              <li v-for="g in sensores" class="z-4"><a v-if="g.grafico" :href="g.grafico">>{{g.nome}}</a></li>
             </ul>
           </details>
         </li>
