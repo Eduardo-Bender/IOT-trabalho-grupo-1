@@ -33,13 +33,17 @@ int main()
 
     printf("%s\n\n", json.get_json());*/
 
-    PinToWrite pin_to_write;
+    /*PinToWrite pin_to_write;
 
     pin_to_write.add_pin(10);
     pin_to_write.add_pin(11);
     pin_to_write.add_pin(12);
 
-    pin_to_write.process("12, 1, 0, 10, 0, 2000, 8, 10, 20", 0);
+    pin_to_write.process("12, 1, 0, 10, 0, 2000, 8, 10, 20", 0);*/
+
+    Json json;
+
+    json = Json(10);
 
     /*pin_to_write.process("10,1,1000", 0);
     pin_to_write.process("10,0,1000", 10);*/

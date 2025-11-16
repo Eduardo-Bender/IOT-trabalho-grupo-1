@@ -66,6 +66,11 @@ private:
 
 public:
 
+    Json()
+    {
+
+    }
+
     Json(int esp_id)
     {
        this->esp_id = esp_id;
