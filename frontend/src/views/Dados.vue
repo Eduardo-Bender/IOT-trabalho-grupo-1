@@ -14,6 +14,8 @@
                 <select v-if="!isLoading" class="select w-min" v-model="selectedPlaca" @change="changePlaca()">
                     <option v-for="p in placas" :id="p">{{ p }}</option>
                 </select>
+                <button class="btn btn-md" @click="exportCSV">Baixar CSV</button>
+
             </div>
             <div class="flex " v-if="!isLoading">
                 <div class="">
@@ -53,7 +55,7 @@ const tables = [{
     url: '/table/ultrassonico',
     cod: 'ULTRASSONICO',
     cols: ['ID', 'Pin', 'Distância', 'Data e hora'],
-    props: ['id', 'pín', 'distancia', 'dataHora']
+    props: ['id', 'pin', 'distancia', 'dataHora']
 
 },
 {
@@ -61,7 +63,7 @@ const tables = [{
     url: '/table/umidtemp',
     cod: 'UMIDADE_TEMPERATURA',
     cols: ['ID', 'Pin', 'Temperatura', 'Umidade', 'Data e hora'],
-    props: ['id', 'pín', 'temperatura','umidade', 'dataHora']
+    props: ['id', 'pin', 'temperatura','umidade', 'dataHora']
 
 },
 {
@@ -69,7 +71,7 @@ const tables = [{
     url: '/table/encoder',
     cod: 'VELOCIDADE_ENCODER',
     cols: ['ID', 'Pin', 'Contagem', 'Data e hora'],
-    props: ['id', 'pín', 'contagem', 'dataHora']
+    props: ['id', 'pin', 'contagem', 'dataHora']
 
 },
 {
@@ -77,7 +79,7 @@ const tables = [{
     url: '/table/acegiro',
     cod: 'ACELEROMETRO_GIROSCOPIO',
     cols: ['ID', 'Pin', 'X (A)', 'Y (A)', 'Z (A)', 'X (G)', 'Y (G)', 'Z (G)', 'Temperatura', 'Data e hora'],
-    props: ['id', 'pín', 'acel_x', 'acel_y', 'acel_z', 'giro_x', 'giro_y', 'giro_z', 'temperatura_mpu', 'dataHora']
+    props: ['id', 'pin', 'acel_x', 'acel_y', 'acel_z', 'giro_x', 'giro_y', 'giro_z', 'temperatura_mpu', 'dataHora']
 
 },
 {
@@ -85,9 +87,23 @@ const tables = [{
     url: '/table/teclado',
     cod: 'TECLADO',
     cols: ['ID', 'Pin', 'Tecla', 'Data e hora'],
-    props: ['id', 'pín', 'tecla', 'dataHora']
+    props: ['id', 'pin', 'tecla', 'dataHora']
 
-},]
+},
+{
+    nome: 'Infravermelho',
+    url: '/table/infravermelho',
+    cod:'IR',
+    cols: ['ID', 'Pin', 'Codigo', 'Data e hora'],
+    props: ['id', 'pin', 'codigo', 'dataHora']
+},
+{
+    nome: 'Relé',
+    url: '/table/rele',
+    cod:'MODULO_RELE',
+    cols: ['ID', 'Pin', 'Ligado', 'Data e hora'],
+    props: ['id', 'pin', 'ligado', 'dataHora']
+}]
 
 const currentPath = ref(window.location.hash)
 
@@ -96,6 +112,19 @@ window.addEventListener('hashchange', () => {
    renderData()
 })
 
+function exportCSV(){
+    const headers = Object.keys(filteredData.value[0]).join(',');
+    const rows = filteredData.value.map(item => Object.values(item).join(',')).join('\n')
+    const csvContent = `${headers}\n${rows}`;
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute('download', 'my_data.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
 
 const currentView = computed(() => {
   return tables.find(obj => obj.url == currentPath.value.slice(1))
@@ -106,7 +135,6 @@ async function getData(busca){
   
   try{
     const response = await axios.get('http://localhost:3001/api/' + busca)
-    console.log(response.data)
     return response.data
 
   } catch (error) {
@@ -118,7 +146,7 @@ async function getData(busca){
 async function renderData(){
     filteredData.value = await getData('sensores/' + currentView.value.cod + '/' + selectedPlaca.value)
     filteredData.value = filteredData.value.filter(obj => obj.dataHora.slice(0,10) == day.value)
-    console.log(filteredData.value)
+ 
 }
 
 async function changeDay(dia) {
@@ -156,12 +184,16 @@ onMounted(async () => {
 //     let velocidade = getRandomInt()
 //     let distancia = getRandomInt()
 
-//     const savejson = { "esp_id": "AA:BB:CC:DD:EE:GG", "sensors": [
-//         {"type": "TEMP", "value": temp, "pin": 27},
-//         {"type": "UMIDADE_TEMPERATURA", "value": {"temperatura": temp1, "umidade":umidade}, "pin": 20},
-//         {"type": "ULTRASSONICO", "value": distancia, "pin": 10},
-//         {"type": "VELOCIDADE_ENCODER", "value": velocidade, "pin": 4},
-//         {"type": "ACELEROMETRO_GIROSCOPIO", "value":{"acel_x": acel_x, "acel_y": acel_y, "acel_z": acel_z, "giro_x": giro_x, "giro_y": giro_y, "giro_z": giro_z, "temperatura_mpu": temp_mpu}, "pin":19}
+//     // const savejson = { "esp_id": "AA:BB:CC:DD:EE:GG", "sensors": [
+//     //     {"type": "TEMP", "value": temp, "pin": 27},
+//     //     {"type": "UMIDADE_TEMPERATURA", "value": {"temperatura": temp1, "umidade":umidade}, "pin": 20},
+//     //     {"type": "ULTRASSONICO", "value": distancia, "pin": 10},
+//     //     {"type": "VELOCIDADE_ENCODER", "value": velocidade, "pin": 4},
+//     //     {"type": "ACELEROMETRO_GIROSCOPIO", "value":{"acel_x": acel_x, "acel_y": acel_y, "acel_z": acel_z, "giro_x": giro_x, "giro_y": giro_y, "giro_z": giro_z, "temperatura_mpu": temp_mpu}, "pin":19}
+//     // ]}
+
+//     const savejson = { "esp_id": "AA:BB:CC:DD:EE:GG", "sensors":[
+//         {"type": "TECLADO", "value":"a", "pin":2}
 //     ]}
 
 //     axios.post('http://localhost:3001/api/dados', savejson)

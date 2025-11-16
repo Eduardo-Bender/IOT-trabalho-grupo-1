@@ -28,7 +28,7 @@ const sensores = [{
 },
 {
   nome: 'Teclado',
-  grafico: '#/teclado',
+  grafico: null,
   tabela: '#/table/teclado'
 }]
 
@@ -59,7 +59,7 @@ const currentView = computed(() => {
           <li>
             <a>Gráficos</a>
             <ul class="p-2">
-              <li v-for="g in sensores" class="z-4"><a :href="g.grafico">>{{g.nome}}</a></li>
+              <li v-for="g in sensores"  class="z-4"><a v-if="g.grafico" :href="g.grafico">>{{g.nome}}</a></li>
             </ul>
           </li>
           <li>
@@ -78,7 +78,7 @@ const currentView = computed(() => {
           <details>
             <summary>Gráficos</summary>
             <ul class="p-0">
-              <li v-for="g in sensores" class="z-4"><a :href="g.grafico">>{{g.nome}}</a></li>
+              <li v-for="g in sensores" class="z-4"><a v-if="g.grafico" :href="g.grafico">>{{g.nome}}</a></li>
             </ul>
           </details>
         </li>
