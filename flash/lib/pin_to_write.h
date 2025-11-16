@@ -13,7 +13,7 @@ struct PinToWrite
 private:
 
     static char const max_pin = 5;
-    char pin_count = 0;
+    char pin_count;
 
     Pin pins[max_pin];
 
@@ -42,7 +42,7 @@ public:
 
     PinToWrite()
     {
-
+        pin_count = 0;
     }
 
     void add_pin(char pin)
@@ -54,6 +54,8 @@ public:
 
         pins[pin_count].define_pin(pin);
         pin_count++;
+
+        printf("ADD PIN, pin_count = %d\n", pin_count);
     }
 
     void process(char *str, unsigned long cur_time)
@@ -91,7 +93,7 @@ public:
             int value = values[i + 1];
             int time = values[i + 2];
 
-            //printf("pin: %d  - values: %d  - time: %d\n", pin, value, time);
+            printf("\n\tpin: %d  - values: %d  - time: %d\n", pin, value, time);
 
             int idx = get_pin_idx(pin);
 

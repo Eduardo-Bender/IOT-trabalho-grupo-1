@@ -21,7 +21,7 @@ using namespace std;
 
 int main()
 {
-    Json json(10);
+    /*Json json(10);
 
     json.append_keypad_string(10, "1234");
 
@@ -31,13 +31,18 @@ int main()
 
     json.append_humidity_temperature_data(5, 15, 25);
 
-    printf("%s\n\n", json.get_json());
+    printf("%s\n\n", json.get_json());*/
 
     PinToWrite pin_to_write;
 
     pin_to_write.add_pin(10);
-    pin_to_write.process("10,1,1000", 0);
-    pin_to_write.process("10,0,1000", 10);
+    pin_to_write.add_pin(11);
+    pin_to_write.add_pin(12);
+
+    pin_to_write.process("12, 1, 0, 10, 0, 2000, 8, 10, 20", 0);
+
+    /*pin_to_write.process("10,1,1000", 0);
+    pin_to_write.process("10,0,1000", 10);*/
 
     /*Pin p;
     p.define_pin(10);
