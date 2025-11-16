@@ -1,8 +1,14 @@
 #include <WiFi.h> 
 #include <PubSubClient.h>  
  
+
+#ifndef TOPICO_SUBSCRIBE
 #define TOPICO_SUBSCRIBE "grupo1_subscribe_mqtt"
+#endif
+
+#ifndef TOPICO_PUBLISH
 #define TOPICO_PUBLISH   "grupo1_publish_mqtt"  
+#endif
 
 #ifndef ID_MQTT
 #define ID_MQTT  "Cliente"
