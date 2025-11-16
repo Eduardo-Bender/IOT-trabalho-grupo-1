@@ -1,5 +1,19 @@
 #include <stdio.h>
 
+#define OUTPUT 0
+#define LOW 0
+#define HIGH 1
+
+int pinMode(int a, int b)
+{
+
+}
+
+void digitalWrite(int pin, int value)
+{
+    printf("Digital Write (pin %d): %d\n", pin, value);
+}
+
 #include "Json.h"
 #include "pin_to_write.h"
 
@@ -19,7 +33,19 @@ int main()
 
     printf("%s\n\n", json.get_json());
 
-    process_pins_to_write("10,  5,    4,4,4");
+    PinToWrite pin_to_write;
+
+    pin_to_write.add_pin(10);
+    pin_to_write.process("10,1,1000", 0);
+    pin_to_write.process("10,0,1000", 10);
+
+    /*Pin p;
+    p.define_pin(10);
+    p.set_pin(1, 1000, 0);
+    p.print_info();
+
+    p.set_pin(0, 2000, 0);*/
+
 
     return 0;
 }

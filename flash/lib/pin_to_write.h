@@ -6,12 +6,16 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#include "Pin.h"
+
 struct PinToWrite
 {
 private:
 
-    int pins[10];
-    int pin_count = 0;
+    static char const max_pin = 3;
+    char pin_count = 0;
+
+    Pin pins[max_pin];
 
     int patoi(int cur, char c)
     {
@@ -21,17 +25,17 @@ private:
         return cur;
     }
 
-    bool check_if_pin_was_added(int pin)
+    int get_pin_idx(char pin)
     {
         for (int i = 0; i < pin_count; i++)
         {
-            if (pin == pins[i])
+            if (pin == pins[i].pin)
             {
-                return true;
+                return i;
             }
         }
 
-        return false;
+        return -1;
     }
 
 public:
@@ -41,16 +45,18 @@ public:
 
     }
 
-    void add_pin(int pin)
+    void add_pin(char pin)
     {
-        pins[pin_count++] = pin;
+        if (pin_count == max_pin)
+        {
+            return;
+        }
 
-        pinMode(pin, OUTPUT);
-        digitalWrite(pin, LOW);
-
+        pins[pin_count].define_pin(pin);
+        pin_count++;
     }
 
-    void process(char *str)
+    void process(char *str, unsigned long cur_time)
     {
         int values[15];
         int values_count = 0;
@@ -79,25 +85,30 @@ public:
 
         values[values_count++] = cur;
 
-        for (int i = 0; i + 1 < values_count; i += 2)
+        for (int i = 0; i + 2 < values_count; i += 3)
         {
             int pin = values[i];
             int value = values[i + 1];
             int time = values[i + 2];
 
-            if (!check_if_pin_was_added(pin))
+            //printf("pin: %d  - values: %d  - time: %d\n", pin, value, time);
+
+            int idx = get_pin_idx(pin);
+
+            if (idx == -1)
             {
                 continue;
             }
 
-            if (time == 0)
-            {
-                digitalWrite(pin, value);
-            }
-            else /// TEM DURACAO
-            {
+            pins[idx].set_pin(value, cur_time, time);
+        }
+    }
 
-            }
+    void check_pin_timeouts(unsigned long cur_time)
+    {
+        for (int i = 0; i < pin_count; i++)
+        {
+            pins[i].check_if_should_turn_off(cur_time);
         }
     }
 };
