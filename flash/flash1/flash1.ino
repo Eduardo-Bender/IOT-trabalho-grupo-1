@@ -18,8 +18,8 @@
 const byte rows = 4;
 const byte cols = 4;
 
-byte colPins[cols] = {12, 13, 15, 2};
-byte rowPins[rows] = {36, 37, 38, 39};
+byte colPins[cols] = {2, 15, 13, 12};
+byte rowPins[rows] = {32, 33, 25, 26};
 
 char keys[rows][cols] = {
   {'1','2','3', 'a'},
