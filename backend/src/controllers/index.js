@@ -1,5 +1,5 @@
 const service = require('../services');
-
+const atuadores = require('../services/atuadores');
 
 // Recebe dados MQTT e processa
 exports.processarDadosMQTT = async (req, res) => {
@@ -10,10 +10,9 @@ exports.processarDadosMQTT = async (req, res) => {
       return res.status(400).json({ error: 'Formato inválido' });
     }
     console.log(esp_id, sensors);
-    // Verifica se placa existe, se não, cria
+
     await service.garantirPlacaExiste(esp_id);
-    console.log("passei aqui 2");
-    // Processa cada sensor
+
     const resultados = [];
     for (const sensor of sensors) {
       const { type, pin, value } = sensor;
@@ -21,14 +20,14 @@ exports.processarDadosMQTT = async (req, res) => {
       const resultado = await service.salvarDadosSensor(esp_id, type, pin, value);
       resultados.push(resultado);
     }
-    console.log("passei aqui 3");
+
     res.status(201).json({
       message: 'Dados processados com sucesso',
       placa_id: esp_id,
       sensores_salvos: resultados.length,
       resultados,
     });
-    console.log("passei aqui 4");
+
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
