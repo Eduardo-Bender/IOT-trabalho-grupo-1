@@ -3,9 +3,9 @@
 
 PinToWrite pin_to_write;
 
-#define LED_AMARELO 12
-#define LED_VERMELHO 13
-#define LED_VERDE 14
+#define LED_AMARELO 13
+#define LED_VERMELHO 12
+#define LED_VERDE 15
 
 void setup()
 {
