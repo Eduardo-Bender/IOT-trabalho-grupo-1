@@ -6,7 +6,7 @@
 
 #define ID_MQTT "ESP1"
 #define ARDUINO_ID 3
-#define PIN_MOTOR 12
+#define PIN_MOTOR 21
 
 #define PASSWORD_MAX_SIZE 10
 
@@ -18,8 +18,8 @@
 const byte rows = 4;
 const byte cols = 4;
 
-byte colPins[cols] = {9, 8, 7, 6};
-byte rowPins[rows] = {13, 12, 11, 10};
+byte colPins[cols] = {12, 13, 15, 2};
+byte rowPins[rows] = {36, 37, 38, 39};
 
 char keys[rows][cols] = {
   {'1','2','3', 'a'},
