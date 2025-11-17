@@ -11,7 +11,7 @@
 
 #include <DHT11.h>
 
-#define dht11pin 15
+#define dht11pin 12
 #define ARDUINO_ID 3
 #define SEND_WAIT_TIME_MS 1000
 
