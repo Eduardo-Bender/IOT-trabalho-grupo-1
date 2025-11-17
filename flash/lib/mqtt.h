@@ -43,6 +43,7 @@ String getMensagemMqtt(void)
 
 void mqttLoop(char* msg = nullptr)
 {
+    mensagem_mqtt = "";
   verifica_conexoes_wifi_mqtt();
   MQTT.publish(TOPICO_PUBLISH, msg);
   MQTT.loop();
