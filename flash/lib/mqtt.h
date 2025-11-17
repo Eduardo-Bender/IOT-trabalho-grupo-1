@@ -19,7 +19,7 @@ const char* PASSWORD = "senhanova";
   
 const char* BROKER_MQTT = "broker.hivemq.com"; 
 int BROKER_PORT = 1883;
-static char mensagem_mqtt[100]; 
+static String mensagem_mqtt; 
 
 WiFiClient espClient;
 PubSubClient MQTT(espClient);
@@ -33,9 +33,9 @@ void reconnect_mqtt(void);
 void mqtt_callback(char* topic, byte* payload, unsigned int length);
 void verifica_conexoes_wifi_mqtt(void);
 void mqttLoop(char*);
-char* getMensagemMqtt(void);
+String getMensagemMqtt(void);
 
-char* getMensagemMqtt(void)
+String getMensagemMqtt(void)
 {
     return mensagem_mqtt;
 }
@@ -91,14 +91,15 @@ void init_mqtt(void)
 void mqtt_callback(char* topic, byte* payload, unsigned int length) 
 {
     mensagem_mqtt = "";
+    String msg;
  
+    //obtem a string do payload recebido
     for(int i = 0; i < length; i++) 
     {
        char c = (char)payload[i];
-       mensagem_mqtt[i] = c;
+       msg += c;
     }
-    
-    mensagem_mqtt[length] = '\0'; // Adiciona o terminador de string
+    mensagem_mqtt = msg;
 }
   
 void reconnect_mqtt(void) 
