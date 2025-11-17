@@ -5,8 +5,6 @@ const {
   SensorAcelerometroEGiroscopio,
   SensorGestosECor,
   SensorVelocidadeEncoder,
-  SensorModuloRele,
-  EstadoMotorVibracao,
   SensorJoystick,
   SensorTeclado,
   SensorIR,
@@ -20,8 +18,6 @@ const sensorsMap = {
   'ACELEROMETRO_GIROSCOPIO': SensorAcelerometroEGiroscopio,
   'GESTOS_COR': SensorGestosECor,
   'VELOCIDADE_ENCODER': SensorVelocidadeEncoder,
-  'MODULO_RELE': SensorModuloRele,
-  'MOTOR_VIBRACAO': EstadoMotorVibracao,
   'JOYSTICK': SensorJoystick,
   'TECLADO': SensorTeclado,
   'IR': SensorIR,
@@ -31,27 +27,26 @@ const sensorsMap = {
 // Garante que a placa existe
 async function garantirPlacaExiste(placaId) {
   const placa = await Placa.findByPk(placaId);
-  console.log("entrei aqui? ",placa, placaId);
   if (!placa) {
     return await Placa.create({ id: placaId });
   }
-  console.log("entrei aqui! ",placa);
   return placa;
 }
 
 // Salva dados de sensor
 async function salvarDadosSensor(placaId, sensorTipo, pin, value) {
   const SensorModel = sensorsMap[sensorTipo];
-  
+
   if (!SensorModel) {
-    throw new Error(`Tipo de sensor '${sensorTipo}' não reconhecido`);
+    console.warn(`Aviso: Tipo de sensor '${sensorTipo}' não reconhecido. Dados não serão salvos.`);
+    return;
   }
 
   // Prepara os dados conforme o tipo de sensor
-  const dados = prepararDadosSensor(sensorTipo, pin, value);
-  dados.placaId = placaId;
+  const dadosParaSalvar = prepararDadosSensor(sensorTipo, pin, value);
+  dadosParaSalvar.placaId = placaId;
 
-  const leitura = await SensorModel.create(dados);
+  const leitura = await SensorModel.create(dadosParaSalvar);
   return {
     sensorTipo,
     pin,
@@ -86,8 +81,10 @@ function prepararDadosSensor(sensorTipo, pin, value) {
       return { pin, codigo: String(value) };
     case 'TECLADO':
       return { pin, tecla: String(value) };
-    case 'MODULO_RELE':
-      return { pin, ligado: Boolean(value) };
+    case 'GESTOS_COR':
+      return { pin, gesto: String(value.gesto), cor_r: Number(value.cor_r), cor_g: Number(value.cor_g), cor_b: Number(value.cor_b) };
+    case 'JOYSTICK': 
+      return { pin, eixo_x: value.eixo_x, eixo_y: value.eixo_y, clique: Boolean(value.clique) };
     default:
       return { pin };
   }

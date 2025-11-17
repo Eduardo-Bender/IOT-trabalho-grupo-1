@@ -16,6 +16,4 @@ router.get('/sensores/:sensorTipo/pin/:pin', ctrl.listarSensorPorPin);
 router.get('/sensores/:sensorTipo/:placaId', ctrl.listarSensorPorTipoEPlaca);
 router.get('/sensores/:sensorTipo', ctrl.listarSensorPorTipo);
 
-
-
 module.exports = router;

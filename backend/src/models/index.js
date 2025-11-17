@@ -77,11 +77,21 @@ const SensorTeclado = sequelize.define('SensorTeclado', {
   dataHora: { type: DataTypes.DATE, allowNull: false, defaultValue: Sequelize.NOW },
 });
 
-// Sensor Módulo Relé
-const SensorModuloRele = sequelize.define('SensorModuloRele', {
+const SensorJoystick = sequelize.define('SensorJoystick', { 
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  pin: { type: DataTypes.INTEGER, allowNull: false }, // Adicione este campo
-  ligado: { type: DataTypes.BOOLEAN, allowNull: false },
+  pin: { type: DataTypes.INTEGER, allowNull: false },
+  eixo_x: { type: DataTypes.FLOAT, allowNull: false },
+  eixo_y: { type: DataTypes.FLOAT, allowNull: false },
+  clique: { type: DataTypes.BOOLEAN, allowNull: false },
+  dataHora: { type: DataTypes.DATE, allowNull: false, defaultValue: Sequelize.NOW },
+});
+const SensorGestosECor = sequelize.define('SensorGestosECor', {
+  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  pin: { type: DataTypes.INTEGER, allowNull: false },
+  gesto: { type: DataTypes.STRING, allowNull: false }, // up, down, left, right
+  cor_r: { type: DataTypes.INTEGER, allowNull: false }, //0 à 255
+  cor_g: { type: DataTypes.INTEGER, allowNull: false },
+  cor_b: { type: DataTypes.INTEGER, allowNull: false },
   dataHora: { type: DataTypes.DATE, allowNull: false, defaultValue: Sequelize.NOW },
 });
 
@@ -93,7 +103,8 @@ Placa.hasMany(SensorVelocidadeEncoder, { foreignKey: 'placaId' });
 Placa.hasMany(SensorAcelerometroEGiroscopio, { foreignKey: 'placaId' });
 Placa.hasMany(SensorIR, { foreignKey: 'placaId' });
 Placa.hasMany(SensorTeclado, { foreignKey: 'placaId' });
-Placa.hasMany(SensorModuloRele, { foreignKey: 'placaId' });
+Placa.hasMany(SensorJoystick, { foreignKey: 'placaId' });
+Placa.hasMany(SensorGestosECor, { foreignKey: 'placaId' });
 
 // Relacionamentos inversos
 SensorTemperatura.belongsTo(Placa, { foreignKey: 'placaId' });
@@ -101,9 +112,10 @@ SensorUltrasonico.belongsTo(Placa, { foreignKey: 'placaId' });
 SensorUmidadeETemperatura.belongsTo(Placa, { foreignKey: 'placaId' });
 SensorVelocidadeEncoder.belongsTo(Placa, { foreignKey: 'placaId' });
 SensorAcelerometroEGiroscopio.belongsTo(Placa, { foreignKey: 'placaId' });
+SensorJoystick.belongsTo(Placa, { foreignKey: 'placaId' });
+SensorGestosECor.belongsTo(Placa, { foreignKey: 'placaId' });
 SensorIR.belongsTo(Placa, { foreignKey: 'placaId' });
 SensorTeclado.belongsTo(Placa, { foreignKey: 'placaId' });
-SensorModuloRele.belongsTo(Placa, { foreignKey: 'placaId' });
 
 // Sincroniza as tabelas
 sequelize.sync();
@@ -117,6 +129,7 @@ module.exports = {
   SensorAcelerometroEGiroscopio,
   SensorIR,
   SensorTeclado,
-  SensorModuloRele,
+  SensorJoystick,
+  SensorGestosECor,
   sequelize,
 };
