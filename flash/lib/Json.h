@@ -95,11 +95,11 @@ public:
         append_data("UMIDADE_TEMPERATURA", pin, 2, humidity, temperature);
     }
 
-    void append_keypad_string(int pin, char str[10])
+    void append_keypad_string(int pin, char str[30])
     {
         check_comma_before_sensor();
 
-        char aux[50];
+        char aux[80];
         sprintf(aux, "{\"type\": \"%s\", \"pin\": %d, \"value\": \"%s\"}", "TECLADO", pin, str);
         strcat(json, aux);
     }
