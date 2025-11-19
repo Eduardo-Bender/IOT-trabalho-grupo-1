@@ -45,6 +45,11 @@ int main()
 
     json = Json(10);
 
+    json.reset();
+    json.append_alert(13, 0);
+
+    printf("%s\n", json.get_json());
+
     /*pin_to_write.process("10,1,1000", 0);
     pin_to_write.process("10,0,1000", 10);*/
 

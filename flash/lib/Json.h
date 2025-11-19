@@ -24,6 +24,25 @@ private:
         has_appended_sensor = true;
     }
 
+public:
+
+    Json()
+    {
+
+    }
+
+    Json(int esp_id)
+    {
+       this->esp_id = esp_id;
+       reset();
+    }
+
+    void reset()
+    {
+        sprintf(json, "{ \"esp_id\": %d, \"sensors\": [", esp_id);
+        has_appended_sensor = false;
+    }
+
     void append_data(char* type, int pin, int arg_count, ...)
     {
         char aux[100];
@@ -64,25 +83,6 @@ private:
         va_end(args);
     }
 
-public:
-
-    Json()
-    {
-
-    }
-
-    Json(int esp_id)
-    {
-       this->esp_id = esp_id;
-       reset();
-    }
-
-    void reset()
-    {
-        sprintf(json, "{ \"esp_id\": %d, \"sensors\": [", esp_id);
-        has_appended_sensor = false;
-    }
-
     void append_temperature_data(int pin, float temperature)
     {
         check_comma_before_sensor();
@@ -101,6 +101,15 @@ public:
 
         char aux[80];
         sprintf(aux, "{\"type\": \"%s\", \"pin\": %d, \"value\": \"%s\"}", "TECLADO", pin, str);
+        strcat(json, aux);
+    }
+
+    void append_alert(int pin, int alert_is_on)
+    {
+        check_comma_before_sensor();
+
+        char aux[80];
+        sprintf(aux, "{\"type\": \"%s\", \"pin\": %d, \"value\": \"%d\"}", "ALERT", pin, alert_is_on);
         strcat(json, aux);
     }
 
