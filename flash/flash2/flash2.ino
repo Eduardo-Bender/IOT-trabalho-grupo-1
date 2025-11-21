@@ -37,6 +37,11 @@ bool max_time_exceeded()
   return (cur_time - time_door_opened) >= MAX_TIME_DOOR_OPEN_MS;
 }
 
+bool door_is_open_pin()
+{
+  return digitalRead(PIN_ENCODER);
+}
+
 void loop()
 {
   cur_time = millis();
@@ -45,14 +50,14 @@ void loop()
   /*pin_to_write.process(pin_to_write_msg, cur_time);/**/
 
   /// PORTA ABRIU
-  if (!door_is_open && digitalRead(PIN_ENCODER))
+  if (!door_is_open && door_is_open_pin())
   {
     time_door_opened = cur_time;
     door_is_open = true;
   }
 
   /// PORTA FECHOU
-  if (!digitalRead(PIN_ENCODER))
+  if (!door_is_open_pin())
   {
     door_is_open = false;
 
