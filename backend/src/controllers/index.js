@@ -9,7 +9,6 @@ exports.processarDadosMQTT = async (req, res) => {
     if (!esp_id || !sensors || !Array.isArray(sensors)) {
       return res.status(400).json({ error: 'Formato inválido' });
     }
-    console.log(esp_id, sensors);
 
     await service.garantirPlacaExiste(esp_id);
 
