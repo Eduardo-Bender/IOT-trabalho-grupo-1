@@ -17,42 +17,47 @@ PinToWrite pin_to_write;
 void setup()
 {
   Serial.begin(9600);
-  //setupMqtt();
+  setupMqtt();
 
   pin_to_write.add_pin(PIN_RELE);
   pinMode(PIN_ENCODER, INPUT_PULLUP);
 }
 
-char pin_to_write_msg[20] = "";
+String mensagem;
+char msg[100];
+
+bool should_send_msg = false;
+bool has_sent_alert_msg = false;
+bool has_sent_OK_msg = true;
+
 unsigned long cur_time = 0;
 unsigned long time_door_opened = 0;
 
 bool door_is_open = false;
-
-bool has_sent_alert_msg = false;
-bool has_sent_OK_msg = true;
 
 bool max_time_exceeded()
 {
   return (cur_time - time_door_opened) >= MAX_TIME_DOOR_OPEN_MS;
 }
 
+bool door_is_open_pin()
+{
+  return digitalRead(PIN_ENCODER);
+}
+
 void loop()
 {
   cur_time = millis();
 
-  /// pin_to_write_msg = mqtt() RECEBE
-  /*pin_to_write.process(pin_to_write_msg, cur_time);/**/
-
   /// PORTA ABRIU
-  if (!door_is_open && digitalRead(PIN_ENCODER))
+  if (!door_is_open && door_is_open_pin())
   {
     time_door_opened = cur_time;
     door_is_open = true;
   }
 
   /// PORTA FECHOU
-  if (!digitalRead(PIN_ENCODER))
+  if (!door_is_open_pin())
   {
     door_is_open = false;
 
@@ -60,9 +65,7 @@ void loop()
     {
       json.reset();
       json.append_alert(PIN_ENCODER, 0);
-
-      /// ENVIAR MQTT
-      Serial.println(json.get_json());
+      should_send_msg = true;
     }
 
     has_sent_OK_msg = true;
@@ -76,12 +79,30 @@ void loop()
     {
       json.reset();
       json.append_alert(PIN_ENCODER, 1);
-
-      /// ENVIAR MQTT
-      Serial.println(json.get_json());
+      should_send_msg = true;
     }
 
     has_sent_alert_msg = true;
     has_sent_OK_msg = false;
   }
+
+  if (should_send_msg)
+  {
+    mqttLoop(json.get_json());
+    should_send_msg = false;
+  }
+  else
+  {
+    mqttLoop("");
+  }
+
+  mensagem = getMensagemMqtt();
+  mensagem.toCharArray(msg, mensagem.length() + 1);
+
+  if(strlen(msg) > 0)
+  {
+    pin_to_write.process(msg, cur_time);
+  }
+
+  pin_to_write.check_pin_timeouts(cur_time);
 }
