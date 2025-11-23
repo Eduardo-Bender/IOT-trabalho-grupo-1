@@ -30,7 +30,23 @@ const sensores = [{
   nome: 'Teclado',
   grafico: null,
   tabela: '#/table/teclado'
-}]
+},
+{
+  nome: 'Sensor de Gestos e Cor',
+  grafico: null,
+  tabela: '#/table/gestoscor'
+},
+{
+  nome: 'Sensor Infravermelho',
+  grafico: null,
+  tabela: '#/table/infravermelho'
+},
+{
+  nome: 'Joystick',
+  grafico: null,
+  tabela: '#/table/joystick'
+}
+]
 
 const routes = inject('routes')
 
