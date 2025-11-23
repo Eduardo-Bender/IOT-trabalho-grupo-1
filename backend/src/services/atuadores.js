@@ -6,11 +6,11 @@ const client = mqtt.connect(config.mqtt.brokerUrl);
 // PIN, ESTADO (1 ou 0), TEMPO (ms) ex: "0,1,1000" para ligar o atuador no pino especificado por 1 segundo
 client.on('connect', () => {
   console.log('Conectado ao broker MQTT para orquestração.');
-  client.subscribe('iot/+/events', (err) => {
-    if (!err) console.log('Assinado o tópico de eventos: iot/+/events');
+  client.subscribe('grupo1/iot/events', (err) => {
+    if (!err) console.log('Assinado o tópico de eventos: grupo1/iot/events');
   });
-  client.subscribe('iot/+/sensors', (err) => {
-    if (!err) console.log('Assinado o tópico de sensores: iot/+/sensors');
+  client.subscribe('grupo1/iot/sensors', (err) => {
+    if (!err) console.log('Assinado o tópico de sensores: grupo1/iot/sensors');
   });
 });
 
@@ -20,10 +20,14 @@ client.on('error', (error) => {
 
 const doorTimers = {};
 
+function publica(espid, command)
+{
+  publishCommand(espid, command);
+}
+
 // Função genérica para publicar comandos
 const publishCommand = (espId, command) => {
-  // const topic = `iot/${espId}/commands`;
-  const topic = "grupo1_subscribe_mqtt"; // Tópico fixo para todos os comandos
+  const topic = `grupo1/${espId}/subscribe}`; // Tópico fixo para todos os comandos
   client.publish(topic, command, (err) => {
     if (err) console.error(`Erro ao publicar no tópico ${topic}:`, err);
     else console.log(`Comando '${command}' publicado para ${topic}`);
@@ -33,9 +37,9 @@ const publishCommand = (espId, command) => {
 // Lógica de tratamento de mensagens
 client.on('message', (topic, message) => {
   const topicParts = topic.split('/');
-  const espId = topicParts[1];
   const messageType = topicParts[2];
   const data = JSON.parse(message.toString());
+  const espId = data.esp_id
   console.log(`Mensagem recebida de ${topic}:`, data, message.toString());
   if (messageType === 'events') {
     // Eventos de ESP1: Teclado
@@ -77,19 +81,20 @@ client.on('message', (topic, message) => {
   
   else if (messageType === 'sensors') {
     // Salvar dados de qualquer sensor
-    if (data.type === 'sensorData') return;
+    // if (data.type === 'sensorData') return;
     console.log(`Salvando dados do sensor do ${espId}:`, data);
-    service.salvarDadosSensor({
-      placaId: espId,
-      sensorTipo: data.type,
-      pin: data.pin,
-      value: data
-    });
-
+    //console.log(data.esp_id, data.sensors[0].type, data.sensors[0].pin, data.sensors[0].value);
+    service.salvarDadosSensor(
+      data.esp_id,
+      data.sensors[0].type,
+      data.sensors[0].pin,
+      data.sensors[0].value
+    );
     // Lógica específica para sensor de temperatura do ESP3
-    if (espId === 'esp3' && data.type === 'temperature') {
-      if (data.value > config.limiteTemperatura) {
-        console.log(`Alerta de Temperatura: ${data.value}°C excede o limite de ${config.limiteTemperatura}°C.`);
+    if (espId == 'esp3' && data.sensors[0].type == 'UMIDADE_TEMPERATURA') {
+      console.log("verificando temperatura...");
+      if (data.sensors[0].value[1] > config.limiteTemperatura) {
+        console.log(`Alerta de Temperatura: ${data.sensors[0].value[1]}°C excede o limite de ${config.limiteTemperatura}°C.`);
         publishCommand('esp4', `${config.esp4YellowPin},1,0`); // Acende LED Amarelo
       } else {
         publishCommand('esp4', `${config.esp4YellowPin},0,0`); // Apaga LED Amarelo
@@ -101,4 +106,5 @@ client.on('message', (topic, message) => {
 module.exports = {
   client,
   publishCommand,
+  publica: publica
 };

@@ -98,11 +98,18 @@ const tables = [{
     props: ['id', 'pin', 'codigo', 'dataHora']
 },
 {
-    nome: 'Relé',
-    url: '/table/rele',
-    cod:'MODULO_RELE',
-    cols: ['ID', 'Pin', 'Ligado', 'Data e hora'],
-    props: ['id', 'pin', 'ligado', 'dataHora']
+    nome: 'Joystick',
+    url: '/table/joystick',
+    cod:'MODULO_JOYSTICK',
+    cols: ['ID', 'Pin', 'Eixo X', 'Eixo Y', 'Clique', 'Data e hora'],
+    props: ['id', 'pin', 'eixo_x', 'eixo_y', 'clique', 'dataHora']
+},
+{
+    nome: 'Gestos e Cor',
+    url: '/table/gestoscor',
+    cod:'GESTOS_COR',
+    cols: ['ID', 'Pin', 'Gesto', 'R', 'G', 'B', 'Data e hora'],
+    props: ['id', 'pin', 'gesto', 'cor_r', 'cor_g', 'cor_b', 'dataHora']
 }]
 
 const currentPath = ref(window.location.hash)

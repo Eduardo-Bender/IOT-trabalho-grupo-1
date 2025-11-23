@@ -36,7 +36,8 @@ async function garantirPlacaExiste(placaId) {
 // Salva dados de sensor
 async function salvarDadosSensor(placaId, sensorTipo, pin, value) {
   const SensorModel = sensorsMap[sensorTipo];
-
+  await garantirPlacaExiste(placaId);
+  
   if (!SensorModel) {
     console.warn(`Aviso: Tipo de sensor '${sensorTipo}' não reconhecido. Dados não serão salvos.`);
     return;
@@ -45,8 +46,10 @@ async function salvarDadosSensor(placaId, sensorTipo, pin, value) {
   // Prepara os dados conforme o tipo de sensor
   const dadosParaSalvar = prepararDadosSensor(sensorTipo, pin, value);
   dadosParaSalvar.placaId = placaId;
+  console.log("dados pra salvar: ", dadosParaSalvar);
 
   const leitura = await SensorModel.create(dadosParaSalvar);
+  console.log("leitura: ", leitura);
   return {
     sensorTipo,
     pin,
@@ -63,7 +66,7 @@ function prepararDadosSensor(sensorTipo, pin, value) {
     case 'ULTRASSONICO':
       return { pin, distancia: value };
     case 'UMIDADE_TEMPERATURA':
-      return { pin, temperatura: value.temperatura || 0, umidade: value.umidade || 0 };
+      return { pin, umidade: value[0] || 0, temperatura: value[1] || 0 };
     case 'VELOCIDADE_ENCODER':
       return { pin, contagem: value };
     case 'ACELEROMETRO_GIROSCOPIO':
