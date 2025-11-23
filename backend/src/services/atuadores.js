@@ -82,7 +82,6 @@ client.on('message', (topic, message) => {
   else if (messageType === 'sensors') {
     // Salvar dados de qualquer sensor
     // if (data.type === 'sensorData') return;
-    console.log(`Salvando dados do sensor do ${espId}:`, data);
     //console.log(data.esp_id, data.sensors[0].type, data.sensors[0].pin, data.sensors[0].value);
     service.salvarDadosSensor(
       data.esp_id,
@@ -92,9 +91,7 @@ client.on('message', (topic, message) => {
     );
     // Lógica específica para sensor de temperatura do ESP3
     if (espId == 'esp3' && data.sensors[0].type == 'UMIDADE_TEMPERATURA') {
-      console.log("verificando temperatura...");
       if (data.sensors[0].value[1] > config.limiteTemperatura) {
-        console.log(`Alerta de Temperatura: ${data.sensors[0].value[1]}°C excede o limite de ${config.limiteTemperatura}°C.`);
         publishCommand('esp4', `${config.esp4YellowPin},1,0`); // Acende LED Amarelo
       } else {
         publishCommand('esp4', `${config.esp4YellowPin},0,0`); // Apaga LED Amarelo
