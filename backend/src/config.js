@@ -9,7 +9,7 @@ module.exports = {
   esp1VibrationEnginePin : 21,
   esp2RelePin: 12,
   esp2EncoderPin: 13,
-  esp3DHT11Pin: 12,
+  esp3DHT11Pin: 15,
   esp4RedPin: 12,
   esp4GreenPin: 15,
   esp4YellowPin: 13, 

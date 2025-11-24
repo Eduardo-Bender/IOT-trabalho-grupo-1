@@ -23,7 +23,7 @@ function publica(espid, command)
 
 // Função genérica para publicar comandos
 const publishCommand = (espId, command) => {
-  const topic = `grupo1/${espId}/subscribe}`; // Tópico fixo para todos os comandos
+  const topic = `grupo1/${espId}/subscribe`; // Tópico fixo para todos os comandos
   client.publish(topic, command, (err) => {
     if (err) console.error(`Erro ao publicar no tópico ${topic}:`, err);
     else console.log(`Comando '${command}' publicado para ${topic}`);
@@ -32,7 +32,7 @@ const publishCommand = (espId, command) => {
 
 // Lógica de tratamento de mensagens
 client.on('message', (topic, message) => {
-  const topicParts = topic.split('/');
+  if(message.toString() === "") return;
   const data = JSON.parse(message.toString());
   const espId = data.esp_id
   const sensor = data.sensors[0];
@@ -47,25 +47,25 @@ client.on('message', (topic, message) => {
       if(sensor.type === 'TECLADO') {
         if (sensor.value === config.senhaAcesso) {
           console.log('Senha correta! Acesso liberado.');
-          publishCommand('esp1', `${config.esp1VibrationEnginePin},1,1000`); // Vibração curta
-          publishCommand('esp4', `${config.esp4GreenPin},1,3000`); // LED Verde por 3s
-          publishCommand('esp2', `${config.esp2RelePin},1,0`);    // Aciona relé (desbloqueio)
+          publishCommand(1, `${config.esp1VibrationEnginePin},1,1000`); // Vibração curta
+          publishCommand(4, `${config.esp4GreenPin},1,3000`); // LED Verde por 3s
+          publishCommand(2, `${config.esp2RelePin},1,0`);    // Aciona relé (desbloqueio)
         } else {
           console.log('Senha incorreta! Acesso negado.');
-          publishCommand('esp1', `${config.esp1VibrationEnginePin},1,3000`); // Vibração longa
-          publishCommand('esp4', `${config.esp4RedPin},1,3000`); // LED Vermelho por 3s
+          publishCommand(1, `${config.esp1VibrationEnginePin},1,3000`); // Vibração longa
+          publishCommand(4, `${config.esp4RedPin},1,3000`); // LED Vermelho por 3s
         }
       }
       break;
     case 2:
       if (sensor.type === 'ALERT') {
         if (sensor.value === 1) {
-          publishCommand('esp4', `${config.esp4GreenPin},1,0`);   // LED Verde aceso
-          publishCommand('esp4', `${config.esp4RedPin},1,0`);     // LED Vermelho aceso
+          publishCommand(4, `${config.esp4GreenPin},1,0`);   // LED Verde aceso
+          publishCommand(4, `${config.esp4RedPin},1,0`);     // LED Vermelho aceso
         } else if (sensor.value === 0) {
           console.log('Alerta de porta removido.');
-          publishCommand('esp4', `${config.esp4GreenPin},0,0`);   // Apaga LED Verde
-          publishCommand('esp4', `${config.esp4RedPin},0,0`);     // Apaga LED Vermelho
+          publishCommand(4, `${config.esp4GreenPin},0,0`);   // Apaga LED Verde
+          publishCommand(4, `${config.esp4RedPin},0,0`);     // Apaga LED Vermelho
          }
       }
       break;
@@ -73,9 +73,9 @@ client.on('message', (topic, message) => {
       if(sensor.type === 'UMIDADE_TEMPERATURA') {
         const temperatura = sensor.value[1]; // [umidade, temperatura]
         if (temperatura > config.limiteTemperatura) {
-          publishCommand('esp4', `${config.esp4YellowPin},1,0`); // Acende LED Amarelo
+          publishCommand(4, `${config.esp4YellowPin},1,0`); // Acende LED Amarelo
          } else {
-          publishCommand('esp4', `${config.esp4YellowPin},0,0`); // Apaga LED Amarelo
+          publishCommand(4, `${config.esp4YellowPin},0,0`); // Apaga LED Amarelo
          }
       }
       break;

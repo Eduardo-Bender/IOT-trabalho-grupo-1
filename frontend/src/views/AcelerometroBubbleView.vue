@@ -61,19 +61,24 @@ async function renderData(){
             }
 
           },
-          plugins: {
-                datalabels: {
-                  anchor: 'end', // Position the label at the end of the bar
-                  align: 'end',  // Align the label to the end of the bar
-                  formatter: (value, context) => {
-                    return value.r
-                  },
-                  color: 'black', // Set label color
-                  font: {
-                    weight: 'bold' // Set font weight
-                  }
-                }
-              }
+          plugins:{
+            datalabels:{
+              display: false
+            }
+          }
+          // plugins: {
+          //       datalabels: {
+          //         anchor: 'end', // Position the label at the end of the bar
+          //         align: 'end',  // Align the label to the end of the bar
+          //         formatter: (value, context) => {
+          //           return value.r
+          //         },
+          //         color: 'black', // Set label color
+          //         font: {
+          //           weight: 'bold' // Set font weight
+          //         }
+          //       }
+          //     }
           }
 
 }

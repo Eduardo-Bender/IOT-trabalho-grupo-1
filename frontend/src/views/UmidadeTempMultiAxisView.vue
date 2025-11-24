@@ -79,14 +79,14 @@ chartOptions.value = {
               }
             },
             temperaturaAxis:{
-              min: Math.min(...yValue.value) - 0.5,
-              max: Math.max(...yValue.value) + 0.5,
+              min: Math.min(...yValue.value) - 1,
+              max: Math.max(...yValue.value) + 1,
               display: true,
               position:'left',
               type: 'linear'
             },
             umidadeAxis:{
-              max: 60,
+              max: Math.max(...y1Value.value) + 5,
               position:'right',
               type: 'linear',
               display: true,
@@ -95,8 +95,35 @@ chartOptions.value = {
               }
             }
           },
+          // plugins:{
+          //   datalabels:{
+          //     display: function(context) {
+          //       console.log(context);
+          //             const totalPoints = context.dataset.data.length;
+          //             const maxLabels = 5; // Maximum labels to show per dataset
+
+          //             // Calculate spacing to evenly distribute labels
+          //             const spacing = Math.floor(totalPoints / maxLabels);
+
+          //             // Show label if it's at the calculated intervals
+          //             return context.dataIndex % spacing === 0 ||
+          //                   context.dataIndex === totalPoints - 1;
+          //                 }
+          //   }
+          // }
           plugins: {
                 datalabels: {
+                    display: function(context) {
+                      const totalPoints = context.dataset.data.length;
+                      const maxLabels = 5; // Maximum labels to show per dataset
+
+                      // Calculate spacing to evenly distribute labels
+                      const spacing = Math.floor(totalPoints / maxLabels);
+
+                      // Show label if it's at the calculated intervals
+                      return context.dataIndex % spacing === 0 ||
+                            context.dataIndex === totalPoints - 1;
+                          },
                   anchor: 'end', // Position the label at the end of the bar
                   align: 'end',  // Align the label to the end of the bar
                   formatter: (value, context) => {

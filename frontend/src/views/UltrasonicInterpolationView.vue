@@ -74,20 +74,25 @@ chartOptions.value = {
               max: Math.max(...yValue.value) + 2
             }
           },
-          plugins: {
-                datalabels: {
-                  anchor: 'end', // Position the label at the end of the bar
-                  align: 'end',  // Align the label to the end of the bar
-                  formatter: (value, context) => {
-                    // Customize the label text here
-                    return value.distancia; // Displays the raw data value
-                  },
-                  color: 'black', // Set label color
-                  font: {
-                    weight: 'bold' // Set font weight
-                  }
-                }
-              }
+          plugins:{
+            datalabels:{
+              display: false
+            }
+          }
+          // plugins: {
+          //       datalabels: {
+          //         anchor: 'end', // Position the label at the end of the bar
+          //         align: 'end',  // Align the label to the end of the bar
+          //         formatter: (value, context) => {
+          //           // Customize the label text here
+          //           return value.distancia; // Displays the raw data value
+          //         },
+          //         color: 'black', // Set label color
+          //         font: {
+          //           weight: 'bold' // Set font weight
+          //         }
+          //       }
+          //     }
           }
 }
 
