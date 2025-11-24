@@ -100,7 +100,7 @@ const tables = [{
 {
     nome: 'Joystick',
     url: '/table/joystick',
-    cod:'MODULO_JOYSTICK',
+    cod:'JOYSTICK',
     cols: ['ID', 'Pin', 'Eixo X', 'Eixo Y', 'Clique', 'Data e hora'],
     props: ['id', 'pin', 'eixo_x', 'eixo_y', 'clique', 'dataHora']
 },
