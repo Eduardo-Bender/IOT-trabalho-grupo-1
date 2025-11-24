@@ -3,7 +3,8 @@
 
 PinToWrite pin_to_write;
 
-#define ID_MQTT "ESP4"
+#define ID_MQTT "ESP4GRUPOGAMER"
+#define TOPICO_SUBSCRIBE "grupo1/4/subscribe"
 #include "../lib/mqtt.h"
 
 #define LED_AMARELO 13

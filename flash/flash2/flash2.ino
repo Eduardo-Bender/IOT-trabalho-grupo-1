@@ -1,5 +1,6 @@
 
-#define ID_MQTT "ESP2"
+#define ID_MQTT "ESP2GRUPOGAMER"
+#define TOPICO_SUBSCRIBE "grupo1/2/subscribe"
 #define ARDUINO_ID 2
 
 #define PIN_RELE 12

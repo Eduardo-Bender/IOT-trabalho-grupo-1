@@ -4,7 +4,8 @@
 
 #include <stdio.h>
 
-#define ID_MQTT "ESP1"
+#define ID_MQTT "ESP1GRUPOGAMER"
+#define TOPICO_SUBSCRIBE "grupo1/1/subscribe"
 #define ARDUINO_ID 1
 #define PIN_MOTOR 21
 
@@ -39,13 +40,14 @@ unsigned long cur_time;
 char password[PASSWORD_MAX_SIZE];
 int idx_password = 0;
 
+String mensagem;
 bool should_send_password;
 char pin_to_write_msg[20] = "";
 
 void setup()
 {
   Serial.begin(9600);
-  //setupMqtt();
+  setupMqtt();
 
   pin_to_write.add_pin(PIN_MOTOR);
   should_send_password = false;
@@ -53,22 +55,26 @@ void setup()
 
 void loop()
 {
+  keypadLoop();
+
   cur_time = millis();
 
+  mensagem = getMensagemMqtt();
+  mensagem.toCharArray(pin_to_write_msg, mensagem.length() + 1);
   //pin_to_write.process("21, 1, 1000", cur_time);
   
   if (should_send_password)
   {
-    //mqttLoop(password);
+    mqttLoop(json.get_json());
     should_send_password = false;
     Serial.println(json.get_json());
+  } else {
+    mqttLoop("");
   }
 
-  keypadLoop();
 
-  /// pin_to_write_msg = mqtt() RECEBE
-  /*pin_to_write.process(pin_to_write_msg, cur_time);
-  pin_to_write.check_pin_timeouts(cur_time);/**/
+  pin_to_write.process(pin_to_write_msg, cur_time);
+  pin_to_write.check_pin_timeouts(cur_time);
 }
 
 void keypadLoop()

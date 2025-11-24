@@ -4,14 +4,14 @@
 
 #include <stdio.h>
 
-#define ID_MQTT "ESP3"
+#define ID_MQTT "ESP3GRUPOGAMER"
 
 #include "../lib/mqtt.h"
 #include "../lib/Json.h"
 
 #include <DHT11.h>
 
-#define dht11pin 12
+#define dht11pin 15
 #define ARDUINO_ID 3
 #define SEND_WAIT_TIME_MS 1000
 
@@ -56,6 +56,8 @@ void loop()
   if (has_appended_data)
   {
     mqttLoop(json.get_json());
+  } else {
+    mqttLoop("");
   }
   
 
