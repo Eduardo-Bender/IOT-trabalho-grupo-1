@@ -36,7 +36,8 @@ async function garantirPlacaExiste(placaId) {
 // Salva dados de sensor
 async function salvarDadosSensor(placaId, sensorTipo, pin, value) {
   const SensorModel = sensorsMap[sensorTipo];
-
+  await garantirPlacaExiste(placaId);
+  
   if (!SensorModel) {
     console.warn(`Aviso: Tipo de sensor '${sensorTipo}' não reconhecido. Dados não serão salvos.`);
     return;
@@ -45,8 +46,10 @@ async function salvarDadosSensor(placaId, sensorTipo, pin, value) {
   // Prepara os dados conforme o tipo de sensor
   const dadosParaSalvar = prepararDadosSensor(sensorTipo, pin, value);
   dadosParaSalvar.placaId = placaId;
+  console.log("dados pra salvar: ", dadosParaSalvar);
 
   const leitura = await SensorModel.create(dadosParaSalvar);
+  console.log("leitura: ", leitura);
   return {
     sensorTipo,
     pin,
@@ -59,13 +62,13 @@ async function salvarDadosSensor(placaId, sensorTipo, pin, value) {
 function prepararDadosSensor(sensorTipo, pin, value) {
   switch (sensorTipo) {
     case 'TEMP':
-      return { pin, temperatura: value };
+      return { pin, temperatura: value.temperatura || 0 };
     case 'ULTRASSONICO':
-      return { pin, distancia: value };
+      return { pin, distancia: value.distancia || 0 };
     case 'UMIDADE_TEMPERATURA':
-      return { pin, temperatura: value.temperatura || 0, umidade: value.umidade || 0 };
+      return { pin, umidade: value.umidade || 0, temperatura: value.temperatura || 0 };
     case 'VELOCIDADE_ENCODER':
-      return { pin, contagem: value };
+      return { pin, contagem: value.contagem || 0 };
     case 'ACELEROMETRO_GIROSCOPIO':
       return {
         pin,
@@ -78,9 +81,9 @@ function prepararDadosSensor(sensorTipo, pin, value) {
         temperatura_mpu: value.temperatura_mpu || null,
       };
     case 'IR':
-      return { pin, codigo: String(value) };
+      return { pin, codigo: String(value.codigo) };
     case 'TECLADO':
-      return { pin, tecla: String(value) };
+      return { pin, tecla: String(value.tecla) };
     case 'GESTOS_COR':
       return { pin, gesto: String(value.gesto), cor_r: Number(value.cor_r), cor_g: Number(value.cor_g), cor_b: Number(value.cor_b) };
     case 'JOYSTICK': 

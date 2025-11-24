@@ -30,8 +30,9 @@ const routes = {
   '/table/encoder': Dados,
   '/table/acegiro': Dados,
   '/table/teclado': Dados,
-  '/table/rele': Dados,
+  '/table/gestoscor': Dados,
   '/table/infravermelho': Dados,
+  '/table/joystick': Dados,
 
 }
 app.provide('routes', routes)
