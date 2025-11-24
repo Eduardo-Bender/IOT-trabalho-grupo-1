@@ -6,9 +6,6 @@ const client = mqtt.connect(config.mqtt.brokerUrl);
 // PIN, ESTADO (1 ou 0), TEMPO (ms) ex: "0,1,1000" para ligar o atuador no pino especificado por 1 segundo
 client.on('connect', () => {
   console.log('Conectado ao broker MQTT para orquestração.');
-  client.subscribe('grupo1/iot/events', (err) => {
-    if (!err) console.log('Assinado o tópico de eventos: grupo1/iot/events');
-  });
   client.subscribe('grupo1/iot/sensors', (err) => {
     if (!err) console.log('Assinado o tópico de sensores: grupo1/iot/sensors');
   });
@@ -18,7 +15,6 @@ client.on('error', (error) => {
   console.error('Erro no cliente MQTT:', error);
 });
 
-const doorTimers = {};
 
 function publica(espid, command)
 {
@@ -37,66 +33,52 @@ const publishCommand = (espId, command) => {
 // Lógica de tratamento de mensagens
 client.on('message', (topic, message) => {
   const topicParts = topic.split('/');
-  const messageType = topicParts[2];
   const data = JSON.parse(message.toString());
   const espId = data.esp_id
+  const sensor = data.sensors[0];
   console.log(`Mensagem recebida de ${topic}:`, data, message.toString());
-  if (messageType === 'events') {
-    // Eventos de ESP1: Teclado
-    if (espId === 'esp1' && data.event === 'password_entry') {
-      if (data.password === config.senhaAcesso) {
-        console.log('Senha correta! Acesso liberado.');
-        publishCommand('esp1', `${config.esp1VibrationEnginePin},1,1000`); // Vibração curta
-        publishCommand('esp4', `${config.esp4GreenPin},1,3000`); // LED Verde por 3s
-        publishCommand('esp2', `${config.esp2RelePin},1,0`);    // Aciona relé (desbloqueio)
-      } else {
-        console.log('Senha incorreta! Acesso negado.');
-        publishCommand('esp1', `${config.esp1VibrationEnginePin},1,3000`); // Vibração longa
-        publishCommand('esp4', `${config.esp4RedPin},1,3000`); // LED Vermelho por 3s
-      }
-    }
-    
-    // Eventos de ESP2: Porta
-    if (espId === 'esp2' && data.sensor === 'door') {
-      if (data.state === 'open') {
-        console.log('Porta aberta. Iniciando timer de 5s...');
-        doorTimers[espId] = setTimeout(() => {
-          console.log('Alerta: Porta aberta por muito tempo!');
-          publishCommand('esp4', `${config.esp4GreenPin},1,0`); // LED Verde aceso
-          publishCommand('esp4', `${config.esp4RedPin},1,0`); // LED Vermelho aceso
-          delete doorTimers[espId];
-        }, 5000);
-      } else if (data.state === 'closed') {
-        if (doorTimers[espId]) {
-          console.log('Porta fechada a tempo.');
-          clearTimeout(doorTimers[espId]);
-          delete doorTimers[espId];
+
+  if (sensor.type !== 'ALERT') {
+    service.salvarDadosSensor(espId, sensor.type, sensor.pin, sensor.value);
+  }
+
+  switch (espId) {
+    case 1:
+      if(sensor.type === 'TECLADO') {
+        if (sensor.value === config.senhaAcesso) {
+          console.log('Senha correta! Acesso liberado.');
+          publishCommand('esp1', `${config.esp1VibrationEnginePin},1,1000`); // Vibração curta
+          publishCommand('esp4', `${config.esp4GreenPin},1,3000`); // LED Verde por 3s
+          publishCommand('esp2', `${config.esp2RelePin},1,0`);    // Aciona relé (desbloqueio)
+        } else {
+          console.log('Senha incorreta! Acesso negado.');
+          publishCommand('esp1', `${config.esp1VibrationEnginePin},1,3000`); // Vibração longa
+          publishCommand('esp4', `${config.esp4RedPin},1,3000`); // LED Vermelho por 3s
         }
-        // Apaga os LEDs de alerta de porta aberta
-        publishCommand('esp4', `${config.esp4GreenPin},0,0`);
-        publishCommand('esp4', `${config.esp4RedPin},0,0`);
       }
-    }
-  } 
-  
-  else if (messageType === 'sensors') {
-    // Salvar dados de qualquer sensor
-    // if (data.type === 'sensorData') return;
-    //console.log(data.esp_id, data.sensors[0].type, data.sensors[0].pin, data.sensors[0].value);
-    service.salvarDadosSensor(
-      data.esp_id,
-      data.sensors[0].type,
-      data.sensors[0].pin,
-      data.sensors[0].value
-    );
-    // Lógica específica para sensor de temperatura do ESP3
-    if (espId == 'esp3' && data.sensors[0].type == 'UMIDADE_TEMPERATURA') {
-      if (data.sensors[0].value[1] > config.limiteTemperatura) {
-        publishCommand('esp4', `${config.esp4YellowPin},1,0`); // Acende LED Amarelo
-      } else {
-        publishCommand('esp4', `${config.esp4YellowPin},0,0`); // Apaga LED Amarelo
+      break;
+    case 2:
+      if (sensor.type === 'ALERT') {
+        if (sensor.value === 1) {
+          publishCommand('esp4', `${config.esp4GreenPin},1,0`);   // LED Verde aceso
+          publishCommand('esp4', `${config.esp4RedPin},1,0`);     // LED Vermelho aceso
+        } else if (sensor.value === 0) {
+          console.log('Alerta de porta removido.');
+          publishCommand('esp4', `${config.esp4GreenPin},0,0`);   // Apaga LED Verde
+          publishCommand('esp4', `${config.esp4RedPin},0,0`);     // Apaga LED Vermelho
+         }
       }
-    }
+      break;
+    case 3:
+      if(sensor.type === 'UMIDADE_TEMPERATURA') {
+        const temperatura = sensor.value[1]; // [umidade, temperatura]
+        if (temperatura > config.limiteTemperatura) {
+          publishCommand('esp4', `${config.esp4YellowPin},1,0`); // Acende LED Amarelo
+         } else {
+          publishCommand('esp4', `${config.esp4YellowPin},0,0`); // Apaga LED Amarelo
+         }
+      }
+      break;
   }
 });
 
