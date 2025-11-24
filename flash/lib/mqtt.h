@@ -7,7 +7,7 @@
 #endif
 
 #ifndef TOPICO_PUBLISH
-#define TOPICO_PUBLISH   "grupo1_publish_mqtt"  
+#define TOPICO_PUBLISH   "grupo1/iot/sensors"  
 #endif
 
 #ifndef ID_MQTT
