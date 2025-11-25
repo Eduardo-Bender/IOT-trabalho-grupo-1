@@ -69,25 +69,31 @@ function setChartOptions(){
               max: Math.max(...yValue.value) + 0.5
             }
           },
-          plugins:{
-            datalabels:{
-              display: false
-            }
-          }
-          // plugins: {
-          //       datalabels: {
-          //         anchor: 'end', // Position the label at the end of the bar
-          //         align: 'end',  // Align the label to the end of the bar
-          //         formatter: (value, context) => {
-          //           // Customize the label text here
-          //           return value.temperatura_mpu; // Displays the raw data value
-          //         },
-          //         color: 'black', // Set label color
-          //         font: {
-          //           weight: 'bold' // Set font weight
-          //         }
-          //       }
-          //     }
+          plugins: {
+                datalabels: {
+                  display: function(context) {
+                      const totalPoints = context.dataset.data.length;
+                      const maxLabels = 5; // Maximum labels to show per dataset
+
+                      // Calculate spacing to evenly distribute labels
+                      const spacing = Math.floor(totalPoints / maxLabels);
+
+                      // Show label if it's at the calculated intervals
+                      return context.dataIndex % spacing === 0 ||
+                            context.dataIndex === totalPoints - 1;
+                          },
+                  anchor: 'end', // Position the label at the end of the bar
+                  align: 'end',  // Align the label to the end of the bar
+                  formatter: (value, context) => {
+                    // Customize the label text here
+                    return value.temperatura_mpu; // Displays the raw data value
+                  },
+                  color: 'black', // Set label color
+                  font: {
+                    weight: 'bold' // Set font weight
+                  }
+                }
+              }
           }
 }
 

@@ -10,7 +10,7 @@
       <input type="checkbox" class="toggle" v-model="isRealTime" @change="realTime"/>
       Tempo real
   </label>
-  <div v-if="isAlerta" role="alert" class="alert alert-warning">
+  <div  role="alert" class="alert alert-warning">
   <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
   </svg>
@@ -95,22 +95,6 @@ chartOptions.value = {
               }
             }
           },
-          // plugins:{
-          //   datalabels:{
-          //     display: function(context) {
-          //       console.log(context);
-          //             const totalPoints = context.dataset.data.length;
-          //             const maxLabels = 5; // Maximum labels to show per dataset
-
-          //             // Calculate spacing to evenly distribute labels
-          //             const spacing = Math.floor(totalPoints / maxLabels);
-
-          //             // Show label if it's at the calculated intervals
-          //             return context.dataIndex % spacing === 0 ||
-          //                   context.dataIndex === totalPoints - 1;
-          //                 }
-          //   }
-          // }
           plugins: {
                 datalabels: {
                     display: function(context) {
