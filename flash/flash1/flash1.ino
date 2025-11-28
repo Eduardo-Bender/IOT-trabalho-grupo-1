@@ -61,8 +61,7 @@ void loop()
 
   mensagem = getMensagemMqtt();
   mensagem.toCharArray(pin_to_write_msg, mensagem.length() + 1);
-  //pin_to_write.process("21, 1, 1000", cur_time);
-  
+ 
   if (should_send_password)
   {
     mqttLoop(json.get_json());
@@ -71,7 +70,6 @@ void loop()
   } else {
     mqttLoop("");
   }
-
 
   pin_to_write.process(pin_to_write_msg, cur_time);
   pin_to_write.check_pin_timeouts(cur_time);

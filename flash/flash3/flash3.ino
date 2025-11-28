@@ -15,10 +15,6 @@
 #define ARDUINO_ID 3
 #define SEND_WAIT_TIME_MS 1000
 
-//#define LED_AMARELO 2
-
-//#define MAX_TEMP 30
-
 DHT11 dht11(dht11pin);
 Json json(ARDUINO_ID);
 
@@ -33,8 +29,6 @@ void setup()
   Serial.begin(9600);
   setupMqtt();
   dht11.setDelay(50);
-  //pinMode(LED_AMARELO, OUTPUT);
-  //digitalWrite(LED_AMARELO, LOW);
 
   last_sent_time = 0;
 }
@@ -59,16 +53,6 @@ void loop()
   } else {
     mqttLoop("");
   }
-  
-
-  /*if (temperatura > MAX_TEMP) {
-  digitalWrite(LED_AMARELO, HIGH); // Acende o LED
-  } else {
-    digitalWrite(LED_AMARELO, LOW); // Apaga o LED
-  }*/
-
-
-  //delay(1000); // 1 Segundo
 }
 
 void dht11Loop()
