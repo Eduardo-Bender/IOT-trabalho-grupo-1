@@ -79,14 +79,14 @@ chartOptions.value = {
               }
             },
             temperaturaAxis:{
-              min: Math.min(...yValue.value) - 1,
-              max: Math.max(...yValue.value) + 1,
+              min: 5,
+              max: 40,
               display: true,
               position:'left',
               type: 'linear'
             },
             umidadeAxis:{
-              max: Math.max(...y1Value.value) + 5,
+              max: 100,
               position:'right',
               type: 'linear',
               display: true,

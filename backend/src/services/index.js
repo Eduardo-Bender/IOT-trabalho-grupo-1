@@ -46,13 +46,11 @@ async function salvarDadosSensor(placaId, sensorTipo, pin, value) {
   // Prepara os dados conforme o tipo de sensor
   const dadosParaSalvar = prepararDadosSensor(sensorTipo, pin, value);
   dadosParaSalvar.placaId = placaId;
-  console.log("dados pra salvar: ", dadosParaSalvar);
+
   if(dadosParaSalvar.value === null) return; // caso seja um array, testar para cada valor se é null, caso sim, não salvar. retornar.
-  dadosParaSalvar.value.forEach(v => {
-    if(v === null) return;
-  });
+  
   const leitura = await SensorModel.create(dadosParaSalvar);
-  console.log("leitura: ", leitura);
+
   return {
     sensorTipo,
     pin,

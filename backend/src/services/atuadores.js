@@ -35,7 +35,9 @@ client.on('message', (topic, message) => {
   if(message.toString() === "") return;
   const data = JSON.parse(message.toString());
   const espId = data.esp_id
+  console.log("id do esp", espId);
   const sensor = data.sensors[0];
+  console.log("sensor", sensor);
   console.log(`Mensagem recebida de ${topic}:`, data, message.toString());
 
   if (sensor.type !== 'ALERT') {
@@ -59,10 +61,11 @@ client.on('message', (topic, message) => {
       break;
     case 2:
       if (sensor.type === 'ALERT') {
-        if (sensor.value === 1) {
+        if (sensor.value === '1') {
+          console.log('Alerta de porta adicionado.');
           publishCommand(4, `${config.esp4GreenPin},1,0`);   // LED Verde aceso
           publishCommand(4, `${config.esp4RedPin},1,0`);     // LED Vermelho aceso
-        } else if (sensor.value === 0) {
+        } else if (sensor.value === '0') {
           console.log('Alerta de porta removido.');
           publishCommand(4, `${config.esp4GreenPin},0,0`);   // Apaga LED Verde
           publishCommand(4, `${config.esp4RedPin},0,0`);     // Apaga LED Vermelho
